@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '../config/config.php';
-require_once '../src/controllers/AuthController.php';
+require_once './config/config.php';
+require_once './src/controllers/AuthController.php';
 
 // Handle logout
 if (isset($_GET['logout'])) {
