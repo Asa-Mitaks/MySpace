@@ -1,0 +1,458 @@
+<?php
+session_start();
+require_once '../config/config.php';
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit;
+}
+
+$username = $_SESSION['username'];
+$userId = $_SESSION['user_id'];
+$isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
+
+// Database connection
+try {
+    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Add profile_image column if not exists
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN profile_image VARCHAR(500) DEFAULT NULL");
+    } catch (PDOException $e) {}
+    
+    // Handle profile image upload
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
+        if ($_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = 'uploads/avatars/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $fileType = $_FILES['profile_image']['type'];
+            
+            if (in_array($fileType, $allowedTypes)) {
+                $extension = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
+                $fileName = 'avatar_' . $userId . '_' . time() . '.' . $extension;
+                $targetPath = $uploadDir . $fileName;
+                
+                if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath)) {
+                    // Delete old avatar if exists
+                    $stmt = $pdo->prepare("SELECT profile_image FROM users WHERE id = ?");
+                    $stmt->execute([$userId]);
+                    $oldImage = $stmt->fetchColumn();
+                    if ($oldImage && file_exists($oldImage)) {
+                        unlink($oldImage);
+                    }
+                    
+                    // Update database
+                    $stmt = $pdo->prepare("UPDATE users SET profile_image = ? WHERE id = ?");
+                    $stmt->execute([$targetPath, $userId]);
+                }
+            }
+        }
+        header("Location: profile.php");
+        exit;
+    }
+    
+    // Get user info
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Get user's post count
+    $stmt = $pdo->prepare("SELECT COUNT(*) as post_count FROM posts WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $postCount = $stmt->fetch(PDO::FETCH_ASSOC)['post_count'];
+    
+    // Get user's comment count
+    $stmt = $pdo->prepare("SELECT COUNT(*) as comment_count FROM comments WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $commentCount = $stmt->fetch(PDO::FETCH_ASSOC)['comment_count'];
+    
+    // Get likes given by user (only count if post still exists)
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) as likes_given 
+        FROM post_likes 
+        INNER JOIN posts ON post_likes.post_id = posts.id 
+        WHERE post_likes.user_id = ?
+    ");
+    $stmt->execute([$userId]);
+    $likesGiven = $stmt->fetch(PDO::FETCH_ASSOC)['likes_given'];
+    
+    // Get likes received on user's posts (only existing posts)
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) as likes_received 
+        FROM post_likes 
+        INNER JOIN posts ON post_likes.post_id = posts.id 
+        WHERE posts.user_id = ?
+    ");
+    $stmt->execute([$userId]);
+    $likesReceived = $stmt->fetch(PDO::FETCH_ASSOC)['likes_received'];
+    
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
+}
+
+$profileImage = $user['profile_image'] ?? null;
+?>
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Myspace</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            background: #f0f2f5;
+        }
+
+        body.dark-mode {
+            background: #202225;
+        }
+
+        .profile-main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 90px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .settings-gear {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .settings-gear:hover {
+            opacity: 1;
+            transform: rotate(45deg);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .profile-avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            cursor: pointer;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-container:hover .profile-avatar {
+            filter: brightness(0.8);
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-avatar-container:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .avatar-overlay span {
+            color: white;
+            font-size: 2rem;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .stat-item.likes-given .stat-value {
+            color: #e74c3c;
+        }
+
+        .stat-item.likes-received .stat-value {
+            color: #27ae60;
+        }
+
+        .profile-info {
+            padding: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-icon {
+            font-size: 1.5rem;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Dark mode */
+        body.dark-mode .profile-card {
+            background: #36393f;
+        }
+
+        body.dark-mode .profile-stats {
+            background: #2f3136;
+            border-bottom-color: #40444b;
+        }
+
+        body.dark-mode .info-item {
+            border-bottom-color: #40444b;
+        }
+
+        body.dark-mode .info-value,
+        body.dark-mode .profile-name {
+            color: #eee;
+        }
+
+        body.dark-mode .stat-label,
+        body.dark-mode .info-label {
+            color: #b9bbbe;
+        }
+
+        body.dark-mode .profile-email {
+            color: #b9bbbe;
+        }
+
+        body.dark-mode .stat-value {
+            color: #eee;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a href="dashboard.php" style="text-decoration: none; color: inherit;"><h1>Myspace</h1></a>
+        </div>
+        <ul class="navbar-menu">
+            <li><a href="dashboard.php">Dashboard</a></li>
+            <li><a href="blog.php">Blog</a></li>
+            <li><a href="chat.php">Chat</a></li>
+            <?php if ($isAdmin): ?>
+            <li><a href="admin.php" class="btn-admin">🛡️ Admin</a></li>
+            <?php endif; ?>
+            <li>
+                <a href="profile.php" class="profile-btn">Perfil</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="profile-main">
+        <div class="profile-card">
+            <a href="settings.php" class="settings-gear" title="Settings">⚙️</a>
+            <div class="profile-header">
+                <form id="avatarForm" action="profile.php" method="POST" enctype="multipart/form-data">
+                    <div class="profile-avatar-container" onclick="document.getElementById('avatarInput').click()">
+                        <div class="profile-avatar">
+                            <?php if ($profileImage && file_exists($profileImage)): ?>
+                                <img src="<?php echo htmlspecialchars($profileImage); ?>" alt="Profile">
+                            <?php else: ?>
+                                <?php echo strtoupper(substr($username, 0, 1)); ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="avatar-overlay">
+                            <span>📷</span>
+                        </div>
+                    </div>
+                    <input type="file" id="avatarInput" name="profile_image" accept="image/*" style="display: none;" onchange="document.getElementById('avatarForm').submit()">
+                </form>
+                <h1 class="profile-name"><?php echo htmlspecialchars($user['name']); ?></h1>
+                <p class="profile-email"><?php echo htmlspecialchars($user['email']); ?></p>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value"><?php echo $postCount; ?></div>
+                    <div class="stat-label">Posts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><?php echo $commentCount; ?></div>
+                    <div class="stat-label">Comentários</div>
+                </div>
+                <div class="stat-item likes-given">
+                    <div class="stat-value"><?php echo $likesGiven; ?></div>
+                    <div class="stat-label">❤️ Likes Dados</div>
+                </div>
+                <div class="stat-item likes-received">
+                    <div class="stat-value"><?php echo $likesReceived; ?></div>
+                    <div class="stat-label">💚 Likes Recebidos</div>
+                </div>
+            </div>
+
+            <div class="profile-info">
+                <div class="info-item">
+                    <span class="info-icon">👤</span>
+                    <div class="info-content">
+                        <div class="info-label">Nome de utilizador</div>
+                        <div class="info-value"><?php echo htmlspecialchars($user['name']); ?></div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">📧</span>
+                    <div class="info-content">
+                        <div class="info-label">Email</div>
+                        <div class="info-value"><?php echo htmlspecialchars($user['email']); ?></div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">📅</span>
+                    <div class="info-content">
+                        <div class="info-label">Membro desde</div>
+                        <div class="info-value"><?php echo date('d M Y', strtotime($user['created_at'])); ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // User Dropdown Toggle
+        function toggleUserDropdown() {
+            const dropdown = document.querySelector('.user-dropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.user-dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            
+            const themeBtn = document.querySelector('.theme-toggle span');
+            if (themeBtn) {
+                themeBtn.textContent = isDark ? '☀️' : '🌙';
+            }
+        }
+
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === 'true') {
+                document.body.classList.add('dark-mode');
+                const themeBtn = document.querySelector('.theme-toggle span');
+                if (themeBtn) {
+                    themeBtn.textContent = '☀️';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
