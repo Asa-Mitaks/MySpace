@@ -92,6 +92,38 @@ try {
     $stmt->execute([$userId]);
     $likesReceived = $stmt->fetch(PDO::FETCH_ASSOC)['likes_received'];
     
+    // Create friendships table if not exists
+    $pdo->exec("CREATE TABLE IF NOT EXISTS friendships (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        friend_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_friendship (user_id, friend_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
+    )");
+    
+    // Get user's friends
+    $stmt = $pdo->prepare("
+        SELECT u.id, u.name, u.profile_image, f.created_at as friendship_date
+        FROM friendships f
+        JOIN users u ON f.friend_id = u.id
+        WHERE f.user_id = ?
+        ORDER BY f.created_at DESC
+    ");
+    $stmt->execute([$userId]);
+    $friends = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $friendCount = count($friends);
+    
+    // Handle remove friend
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'remove_friend') {
+        $friendId = (int) $_POST['friend_id'];
+        $stmt = $pdo->prepare("DELETE FROM friendships WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)");
+        $stmt->execute([$userId, $friendId, $friendId, $userId]);
+        header("Location: profile.php");
+        exit;
+    }
+    
 } catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
@@ -287,6 +319,83 @@ $profileImage = $user['profile_image'] ?? null;
             color: #333;
         }
 
+        /* Friends Section */
+        .friends-section {
+            padding: 25px;
+            border-top: 1px solid #eee;
+        }
+
+        .friends-title {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .friends-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .friend-item:hover {
+            background: #f0f0f0;
+        }
+
+        .friend-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .friend-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .friend-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .btn-remove-friend {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .btn-remove-friend:hover {
+            background: #ffebee;
+            color: #e53935;
+        }
+
+        .stat-item.friends .stat-value {
+            color: #667eea;
+        }
+
         /* Dark mode */
         body.dark-mode .profile-card {
             background: #36393f;
@@ -319,10 +428,47 @@ $profileImage = $user['profile_image'] ?? null;
             color: #eee;
         }
 
+        body.dark-mode .friends-section {
+            border-top-color: #40444b;
+        }
+
+        body.dark-mode .friends-title {
+            color: #eee;
+        }
+
+        body.dark-mode .friend-item {
+            background: #40444b;
+        }
+
+        body.dark-mode .friend-item:hover {
+            background: #4a4d52;
+        }
+
+        body.dark-mode .friend-name {
+            color: #eee;
+        }
+
+        body.dark-mode .btn-remove-friend {
+            color: #72767d;
+        }
+
+        body.dark-mode .btn-remove-friend:hover {
+            background: rgba(229, 57, 53, 0.2);
+            color: #ff6b6b;
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             .profile-stats {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .friends-list {
+                flex-direction: column;
+            }
+
+            .friend-item {
+                width: 100%;
             }
         }
     </style>
@@ -342,6 +488,9 @@ $profileImage = $user['profile_image'] ?? null;
             <?php endif; ?>
             <li>
                 <a href="profile.php" class="profile-btn">Perfil</a>
+            </li>
+            <li>
+                <a href="logout.php" class="btn-logout">Sair</a>
             </li>
         </ul>
     </nav>
@@ -379,6 +528,10 @@ $profileImage = $user['profile_image'] ?? null;
                     <div class="stat-value"><?php echo $commentCount; ?></div>
                     <div class="stat-label">Comentários</div>
                 </div>
+                <div class="stat-item friends">
+                    <div class="stat-value"><?php echo $friendCount; ?></div>
+                    <div class="stat-label">👥 Amigos</div>
+                </div>
                 <div class="stat-item likes-given">
                     <div class="stat-value"><?php echo $likesGiven; ?></div>
                     <div class="stat-label">❤️ Likes Dados</div>
@@ -412,6 +565,34 @@ $profileImage = $user['profile_image'] ?? null;
                     </div>
                 </div>
             </div>
+
+            <!-- Friends Section -->
+            <?php if ($friendCount > 0): ?>
+            <div class="friends-section">
+                <h3 class="friends-title">👥 Amigos (<?php echo $friendCount; ?>)</h3>
+                <div class="friends-list">
+                    <?php foreach ($friends as $friend): ?>
+                    <div class="friend-item">
+                        <div class="friend-avatar">
+                            <?php if (!empty($friend['profile_image']) && file_exists($friend['profile_image'])): ?>
+                                <img src="<?php echo htmlspecialchars($friend['profile_image']); ?>" alt="Avatar">
+                            <?php else: ?>
+                                <?php echo strtoupper(substr($friend['name'], 0, 1)); ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name"><?php echo htmlspecialchars($friend['name']); ?></div>
+                        </div>
+                        <form action="profile.php" method="POST" style="margin: 0;">
+                            <input type="hidden" name="action" value="remove_friend">
+                            <input type="hidden" name="friend_id" value="<?php echo $friend['id']; ?>">
+                            <button type="submit" class="btn-remove-friend" title="Remover amigo" onclick="return confirm('Remover <?php echo htmlspecialchars($friend['name']); ?> dos amigos?')">✕</button>
+                        </form>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
     </main>
 

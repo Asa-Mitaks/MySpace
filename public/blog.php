@@ -22,6 +22,17 @@ try {
         UNIQUE KEY unique_like (post_id, user_id)
     )");
     
+    // Create friendships table if not exists
+    $pdo->exec("CREATE TABLE IF NOT EXISTS friendships (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        friend_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_friendship (user_id, friend_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
+    )");
+    
     // Add image_url and description columns if not exist
     try {
         $pdo->exec("ALTER TABLE posts ADD COLUMN image_url VARCHAR(500) DEFAULT NULL");
@@ -156,6 +167,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         header("Location: blog.php#post-" . $postId);
         exit;
     }
+    
+    // Add friend
+    if ($_POST['action'] === 'add_friend' && $isLoggedIn && isset($_POST['friend_id'])) {
+        $friendId = (int) $_POST['friend_id'];
+        if ($friendId != $currentUserId) {
+            // Add friendship in both directions
+            $stmt = $pdo->prepare("INSERT IGNORE INTO friendships (user_id, friend_id) VALUES (?, ?)");
+            $stmt->execute([$currentUserId, $friendId]);
+            $stmt->execute([$friendId, $currentUserId]);
+        }
+        header("Location: blog.php");
+        exit;
+    }
 }
 
 // Fetch all posts with author info and like count
@@ -201,17 +225,18 @@ function formatDate($date) {
     return date('d M Y', $timestamp);
 }
 
-// Fetch suggested users (newest users, excluding current user)
+// Fetch suggested users (newest users, excluding current user and friends)
 $suggestedUsers = [];
 if ($isLoggedIn) {
     $stmt = $pdo->prepare("
         SELECT id, name, profile_image, created_at 
         FROM users 
         WHERE id != ? 
+        AND id NOT IN (SELECT friend_id FROM friendships WHERE user_id = ?)
         ORDER BY created_at DESC 
         LIMIT 5
     ");
-    $stmt->execute([$currentUserId]);
+    $stmt->execute([$currentUserId, $currentUserId]);
     $suggestedUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
@@ -1440,7 +1465,11 @@ if ($isLoggedIn) {
                         <div class="suggested-name"><?php echo htmlspecialchars($user['name']); ?></div>
                         <div class="suggested-joined">Juntou-se <?php echo formatDate($user['created_at']); ?></div>
                     </div>
-                    <button class="btn-add-friend" title="Adicionar amigo">+ Amigo</button>
+                    <form action="blog.php" method="POST" style="margin: 0;">
+                        <input type="hidden" name="action" value="add_friend">
+                        <input type="hidden" name="friend_id" value="<?php echo $user['id']; ?>">
+                        <button type="submit" class="btn-add-friend" title="Adicionar amigo">+ Amigo</button>
+                    </form>
                 </div>
                 <?php endforeach; ?>
             </div>

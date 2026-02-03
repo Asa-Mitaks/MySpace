@@ -608,7 +608,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1>Conecta-te e Partilha com a Comunidade</h1>
                 <p>Uma plataforma completa de comunicação onde podes criar posts no blog, conversar em tempo real e fazer parte de uma comunidade ativa.</p>
                 <div class="hero-buttons">
-                    <a href="register.php" class="btn-hero btn-hero-primary">Começar Agora</a>
+                    <a href="public/register.php" class="btn-hero btn-hero-primary">Começar Agora</a>
                     <a href="#features" class="btn-hero btn-hero-secondary">Saber Mais</a>
                 </div>
             </div>
@@ -632,7 +632,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <button type="submit">Entrar</button>
                 </form>
-                <p class="register-link">Ainda não tens conta? <a href="register.php">Regista-te aqui</a></p>
+                <p class="register-link">Ainda não tens conta? <a href="public/register.php">Regista-te aqui</a></p>
             </div>
         </div>
     </section>
@@ -715,7 +715,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="cta">
         <h2>Pronto para começar?</h2>
         <p>Junta-te a milhares de utilizadores que já fazem parte da nossa comunidade. Regista-te gratuitamente hoje!</p>
-        <a href="register.php" class="btn-hero btn-hero-primary">Criar Conta Grátis</a>
+        <a href="public/register.php" class="btn-hero btn-hero-primary">Criar Conta Grátis</a>
     </section>
 
     <!-- Footer -->
@@ -730,7 +730,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <ul>
                     <li><a href="#features">Funcionalidades</a></li>
                     <li><a href="#how-it-works">Como Funciona</a></li>
-                    <li><a href="register.php">Registar</a></li>
+                    <li><a href="public/register.php">Registar</a></li>
                 </ul>
             </div>
             <div class="footer-links">

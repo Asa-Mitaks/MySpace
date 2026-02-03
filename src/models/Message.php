@@ -28,7 +28,7 @@ class Message {
         if ($chatPartnerId) {
             // Get messages between two users
             $stmt = $this->db->prepare("
-                SELECT m.*, m.message as content, u.name as username 
+                SELECT m.*, m.message as content, u.name as username, u.profile_image 
                 FROM messages m 
                 JOIN users u ON m.sender_id = u.id 
                 WHERE (m.sender_id = ? AND m.receiver_id = ?) 
@@ -39,7 +39,7 @@ class Message {
         } else {
             // Get all messages (for public chat room - where receiver_id is NULL)
             $stmt = $this->db->prepare("
-                SELECT m.*, m.message as content, u.name as username 
+                SELECT m.*, m.message as content, u.name as username, u.profile_image 
                 FROM messages m 
                 JOIN users u ON m.sender_id = u.id 
                 WHERE m.receiver_id IS NULL
@@ -54,6 +54,11 @@ class Message {
     public function deleteMessage($messageId, $userId) {
         $stmt = $this->db->prepare("DELETE FROM messages WHERE id = ? AND sender_id = ?");
         return $stmt->execute([$messageId, $userId]);
+    }
+
+    public function updateMessage($messageId, $userId, $newContent) {
+        $stmt = $this->db->prepare("UPDATE messages SET message = ? WHERE id = ? AND sender_id = ?");
+        return $stmt->execute([$newContent, $messageId, $userId]);
     }
 }
 ?>

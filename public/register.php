@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $registrationSuccess = $authController->register($name, $password, $email);
 
         if ($registrationSuccess) {
-            header('Location: index.php?registered=1');
+            header('Location: ../index.php?registered=1');
             exit;
         } else {
             $error = 'Registration failed. Name or email may already be taken.';
