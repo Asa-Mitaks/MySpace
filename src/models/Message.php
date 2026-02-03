@@ -28,7 +28,7 @@ class Message {
         if ($chatPartnerId) {
             // Get messages between two users
             $stmt = $this->db->prepare("
-                SELECT m.*, u.name as username 
+                SELECT m.*, m.message as content, u.name as username 
                 FROM messages m 
                 JOIN users u ON m.sender_id = u.id 
                 WHERE (m.sender_id = ? AND m.receiver_id = ?) 
@@ -37,11 +37,12 @@ class Message {
             ");
             $stmt->execute([$userId, $chatPartnerId, $chatPartnerId, $userId]);
         } else {
-            // Get all messages (for public chat room)
+            // Get all messages (for public chat room - where receiver_id is NULL)
             $stmt = $this->db->prepare("
-                SELECT m.*, u.name as username 
+                SELECT m.*, m.message as content, u.name as username 
                 FROM messages m 
                 JOIN users u ON m.sender_id = u.id 
+                WHERE m.receiver_id IS NULL
                 ORDER BY m.created_at DESC
                 LIMIT 50
             ");
