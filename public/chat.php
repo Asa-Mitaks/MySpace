@@ -35,8 +35,16 @@ $messages = $chatController->getMessages($_SESSION['user_id'], null) ?? [];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
     <title>Chat - Myspace</title>
+    <style>
+        /* Ensure chat takes full height */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -53,6 +61,9 @@ $messages = $chatController->getMessages($_SESSION['user_id'], null) ?? [];
             <?php endif; ?>
             <li>
                 <a href="profile.php" class="profile-btn">Perfil</a>
+            </li>
+            <li>
+                <a href="logout.php" class="btn-logout">Sair</a>
             </li>
         </ul>
     </nav>
@@ -110,6 +121,14 @@ $messages = $chatController->getMessages($_SESSION['user_id'], null) ?? [];
         if (chatMessages) {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+
+        // Load saved theme preference (Dark Mode)
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        });
     </script>
 </body>
 </html>

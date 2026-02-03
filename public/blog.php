@@ -1269,6 +1269,9 @@ if ($isLoggedIn) {
             <li>
                 <a href="profile.php" class="profile-btn">Perfil</a>
             </li>
+            <li>
+                <a href="logout.php" class="btn-logout">Sair</a>
+            </li>
             <?php else: ?>
             <li><a href="index.php">Entrar</a></li>
             <?php endif; ?>

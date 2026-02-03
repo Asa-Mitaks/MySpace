@@ -36,6 +36,9 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
                 <li>
                     <a href="profile.php" class="profile-btn">Perfil</a>
                 </li>
+                <li>
+                    <a href="logout.php" class="btn-logout">Sair</a>
+                </li>
             </ul>
         </nav>
 

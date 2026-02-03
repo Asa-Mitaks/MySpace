@@ -110,16 +110,116 @@ function formatDate($date) {
             padding: 30px;
             border-radius: 12px;
             margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .admin-header h1 {
+        .admin-header-text h1 {
             margin: 0 0 10px 0;
             font-size: 2rem;
         }
         
-        .admin-header p {
+        .admin-header-text p {
             margin: 0;
             opacity: 0.8;
+        }
+
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: white;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 13px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle-slider {
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .toggle-switch {
+            background: #667eea;
+        }
+
+        body.dark-mode .toggle-slider {
+            transform: translateX(24px);
+        }
+        
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: #202225;
+        }
+
+        body.dark-mode .stat-card {
+            background: #36393f;
+        }
+
+        body.dark-mode .stat-card .stat-number {
+            color: #eee;
+        }
+
+        body.dark-mode .stat-card .stat-label {
+            color: #b9bbbe;
+        }
+
+        body.dark-mode .admin-section {
+            background: #36393f;
+        }
+
+        body.dark-mode .section-header {
+            background: #2f3136;
+            border-bottom-color: #40444b;
+        }
+
+        body.dark-mode .section-header h2 {
+            color: #eee;
+        }
+
+        body.dark-mode .admin-table th {
+            background: #2f3136;
+            color: #b9bbbe;
+        }
+
+        body.dark-mode .admin-table td {
+            color: #dcddde;
+            border-bottom-color: #40444b;
+        }
+
+        body.dark-mode .admin-table tr:hover {
+            background: #40444b;
+        }
+
+        body.dark-mode .blog-footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
         
         .stats-grid {
@@ -293,8 +393,16 @@ function formatDate($date) {
     <div class="admin-container">
         <!-- Header -->
         <div class="admin-header">
-            <h1>📊 Admin Dashboard</h1>
-            <p>Manage users, posts, and monitor activity</p>
+            <div class="admin-header-text">
+                <h1>📊 Admin Dashboard</h1>
+                <p>Manage users, posts, and monitor activity</p>
+            </div>
+            <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+                <span class="toggle-label">Modo Escuro</span>
+                <div class="toggle-switch">
+                    <div class="toggle-slider" id="darkModeSlider"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Statistics -->
@@ -429,5 +537,22 @@ function formatDate($date) {
     <footer class="blog-footer">
         <p>&copy; <?php echo date("Y"); ?> Chat Forum Admin Panel. All rights reserved.</p>
     </footer>
+
+    <script>
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
 </body>
 </html>

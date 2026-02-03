@@ -15,9 +15,9 @@ if (isset($_GET['logout'])) {
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
     if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
-        header('Location: admin.php');
+        header('Location: public/admin.php');
     } else {
-        header('Location: dashboard.php');
+        header('Location: public/dashboard.php');
     }
     exit;
 }
@@ -32,9 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($loginResult) {
         if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
-            header('Location: admin.php');
+            header('Location: public/admin.php');
         } else {
-            header('Location: dashboard.php');
+            header('Location: public/dashboard.php');
         }
         exit;
     } else {
