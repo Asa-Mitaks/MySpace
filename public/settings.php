@@ -80,6 +80,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $messageType = 'error';
             }
         }
+        
+        // Delete account
+        if ($_POST['action'] === 'delete_account') {
+            // Delete user's messages
+            $stmt = $pdo->prepare("DELETE FROM messages WHERE sender_id = ? OR receiver_id = ?");
+            $stmt->execute([$userId, $userId]);
+            
+            // Delete user's friendships
+            $stmt = $pdo->prepare("DELETE FROM friendships WHERE user_id = ? OR friend_id = ?");
+            $stmt->execute([$userId, $userId]);
+            
+            // Delete user's comments
+            $stmt = $pdo->prepare("DELETE FROM comments WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            
+            // Delete user's post likes
+            $stmt = $pdo->prepare("DELETE FROM post_likes WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            
+            // Delete user's posts
+            $stmt = $pdo->prepare("DELETE FROM posts WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            
+            // Delete user account
+            $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->execute([$userId]);
+            
+            // Destroy session and redirect
+            session_destroy();
+            header('Location: ../index.php?deleted=1');
+            exit;
+        }
     }
 }
 ?>
@@ -182,6 +214,158 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         body.dark-mode .toggle-label {
             color: #eee;
+        }
+
+        /* Danger Zone Styles */
+        .danger-card {
+            border: 2px solid #ff6b6b;
+        }
+
+        .danger-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%) !important;
+        }
+
+        .danger-text {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .danger-text {
+            color: #aaa;
+        }
+
+        .btn-delete-account {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-delete-account:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body.dark-mode .modal-content {
+            background: #2d2d44;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .modal-content h3 {
+            color: #eee;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .modal-content p {
+            color: #aaa;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        body.dark-mode .btn-cancel {
+            background: #40444b;
+            color: #eee;
+        }
+
+        body.dark-mode .btn-cancel:hover {
+            background: #4a4e57;
+        }
+
+        .btn-confirm-delete {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-confirm-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
         }
 
         .settings-card {
@@ -388,7 +572,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
         </div>
+
+        <!-- Delete Account Button -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button type="button" class="btn-delete-account" onclick="openDeleteModal()">Eliminar Conta</button>
+        </div>
     </main>
+
+    <!-- Delete Account Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <h3>Eliminar Conta</h3>
+            <p>Ao eliminar a tua conta, todos os teus dados serão permanentemente removidos, incluindo posts, comentários, mensagens e amizades.</p>
+            <p><strong>Esta ação não pode ser revertida.</strong></p>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <form method="POST" action="settings.php" style="display: inline;">
+                    <input type="hidden" name="action" value="delete_account">
+                    <button type="submit" class="btn-confirm-delete">Sim, Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
         // User Dropdown Toggle
@@ -417,6 +623,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const savedTheme = localStorage.getItem('darkMode');
             if (savedTheme === 'true') {
                 document.body.classList.add('dark-mode');
+            }
+        });
+
+        // Delete Account Modal
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
             }
         });
     </script>

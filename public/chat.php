@@ -160,7 +160,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                                 </div>
                                 <?php if ($msg['sender_id'] == $userId): ?>
                                 <div class="message-menu">
-                                    <button type="button" class="menu-dots" onclick="toggleMenu(<?php echo $msg['id']; ?>)">
+                                    <button type="button" class="menu-dots" onclick="toggleMenu(<?php echo $msg['id']; ?>, event)">
                                         <span></span><span></span><span></span>
                                     </button>
                                     <div class="menu-dropdown" id="menu-<?php echo $msg['id']; ?>">
@@ -249,16 +249,24 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         });
 
         // Toggle menu dropdown
-        function toggleMenu(messageId) {
-            // Close all other menus first
-            document.querySelectorAll('.menu-dropdown.show').forEach(menu => {
-                if (menu.id !== 'menu-' + messageId) {
-                    menu.classList.remove('show');
-                }
-            });
+        function toggleMenu(messageId, event) {
+            // Stop event propagation to prevent document click handler from firing
+            if (event) {
+                event.stopPropagation();
+            }
             
             const menu = document.getElementById('menu-' + messageId);
-            menu.classList.toggle('show');
+            const isCurrentlyOpen = menu.classList.contains('show');
+            
+            // Close all menus first
+            document.querySelectorAll('.menu-dropdown.show').forEach(m => {
+                m.classList.remove('show');
+            });
+            
+            // If this menu was closed, open it
+            if (!isCurrentlyOpen) {
+                menu.classList.add('show');
+            }
         }
 
         // Close menus when clicking outside
