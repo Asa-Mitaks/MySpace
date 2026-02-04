@@ -934,9 +934,16 @@ if ($isLoggedIn) {
         }
 
         .post-image {
-            width: 100%;
+            width: calc(100% - 30px);
             max-height: 500px;
             object-fit: cover;
+            border-radius: 12px;
+            margin: 10px 15px;
+            display: block;
+        }
+
+        body.dark-mode .post-image {
+            /* no changes needed for image itself */
         }
 
         .post-content {
@@ -1031,9 +1038,10 @@ if ($isLoggedIn) {
 
         .comment {
             display: flex;
-            gap: 12px;
-            padding: 12px 0;
+            gap: 10px;
+            padding: 10px 0 10px 8px;
             border-bottom: 1px solid #f0f0f0;
+            align-items: center;
         }
 
         .comment:last-child {
@@ -1067,7 +1075,7 @@ if ($isLoggedIn) {
 
         .comment-bubble {
             background: #f0f2f5;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 12px;
             display: inline-block;
         }
@@ -1087,7 +1095,7 @@ if ($isLoggedIn) {
         .comment-meta {
             display: flex;
             gap: 15px;
-            margin-top: 5px;
+            margin-top: 3px;
             padding-left: 14px;
         }
 

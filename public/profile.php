@@ -471,6 +471,122 @@ $profileImage = $user['profile_image'] ?? null;
                 width: 100%;
             }
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body.dark-mode .modal-content {
+            background: #2d2d44;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .modal-content h3 {
+            color: #eee;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .modal-content p {
+            color: #aaa;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        body.dark-mode .btn-cancel {
+            background: #40444b;
+            color: #eee;
+        }
+
+        body.dark-mode .btn-cancel:hover {
+            background: #4a4e57;
+        }
+
+        .btn-confirm-remove {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-confirm-remove:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -583,11 +699,7 @@ $profileImage = $user['profile_image'] ?? null;
                         <div class="friend-info">
                             <div class="friend-name"><?php echo htmlspecialchars($friend['name']); ?></div>
                         </div>
-                        <form action="profile.php" method="POST" style="margin: 0;">
-                            <input type="hidden" name="action" value="remove_friend">
-                            <input type="hidden" name="friend_id" value="<?php echo $friend['id']; ?>">
-                            <button type="submit" class="btn-remove-friend" title="Remover amigo" onclick="return confirm('Remover <?php echo htmlspecialchars($friend['name']); ?> dos amigos?')">✕</button>
-                        </form>
+                        <button type="button" class="btn-remove-friend" title="Remover amigo" onclick="openRemoveFriendModal(<?php echo $friend['id']; ?>, '<?php echo htmlspecialchars(addslashes($friend['name'])); ?>')">✕</button>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -595,6 +707,23 @@ $profileImage = $user['profile_image'] ?? null;
             <?php endif; ?>
         </div>
     </main>
+
+    <!-- Remove Friend Modal -->
+    <div class="modal-overlay" id="removeFriendModal">
+        <div class="modal-content">
+            <div class="modal-icon">👥</div>
+            <h3>Remover Amigo</h3>
+            <p>Tens a certeza que queres remover <strong id="friendNameToRemove"></strong> dos teus amigos?</p>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeRemoveFriendModal()">Cancelar</button>
+                <form id="removeFriendForm" action="profile.php" method="POST" style="display: inline;">
+                    <input type="hidden" name="action" value="remove_friend">
+                    <input type="hidden" name="friend_id" id="friendIdToRemove" value="">
+                    <button type="submit" class="btn-confirm-remove">Sim, Remover</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
         // User Dropdown Toggle
@@ -632,6 +761,24 @@ $profileImage = $user['profile_image'] ?? null;
                 if (themeBtn) {
                     themeBtn.textContent = '☀️';
                 }
+            }
+        });
+
+        // Remove Friend Modal
+        function openRemoveFriendModal(friendId, friendName) {
+            document.getElementById('friendIdToRemove').value = friendId;
+            document.getElementById('friendNameToRemove').textContent = friendName;
+            document.getElementById('removeFriendModal').classList.add('show');
+        }
+
+        function closeRemoveFriendModal() {
+            document.getElementById('removeFriendModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('removeFriendModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRemoveFriendModal();
             }
         });
     </script>
