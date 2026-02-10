@@ -34,10 +34,10 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
                 <li><a href="admin.php" class="btn-admin">🛡️ Admin</a></li>
                 <?php endif; ?>
                 <li>
-                    <a href="profile.php" class="profile-btn">Perfil</a>
+                    <a href="profile.php" class="profile-btn">Profile</a>
                 </li>
                 <li>
-                    <a href="logout.php" class="btn-logout">Sair</a>
+                    <a href="logout.php" class="btn-logout">Logout</a>
                 </li>
             </ul>
         </nav>
@@ -49,8 +49,8 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
                 <!-- Header -->
                 <div class="landing-header">
                     <div class="header-content">
-                        <h1>Bem-vindo, <?php echo htmlspecialchars($username); ?>! 👋</h1>
-                        <p>A tua plataforma de comunicação e partilha</p>
+                        <h1>Welcome, <?php echo htmlspecialchars($username); ?>! 👋</h1>
+                        <p>Your communication and sharing platform</p>
                     </div>
                     <div class="header-decoration"></div>
                 </div>
@@ -59,12 +59,12 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
                 <div class="landing-section">
                     <h2 class="section-heading">
                         <span class="heading-icon">✨</span>
-                        Sobre a Aplicação
+                        About the App
                     </h2>
                     <div class="about-text">
-                        <p>O <strong>Myspace</strong> é uma plataforma de comunicação e partilha criada para conectar pessoas. Aqui podes expressar as tuas ideias através do nosso <strong>blog interativo</strong>, onde tens a liberdade de criar e publicar posts sobre qualquer tema que te interesse.</p>
-                        <p>Além disso, oferecemos um sistema de <strong>chat em tempo real</strong> que te permite conversar instantaneamente com outros membros da comunidade. Seja para trocar ideias, fazer novos amigos ou simplesmente socializar, o Myspace é o lugar certo para ti.</p>
-                        <p>A nossa <strong>comunidade</strong> está sempre a crescer, e cada membro contribui para tornar este espaço mais rico e diversificado. Junta-te a nós e faz parte desta experiência!</p>
+                        <p><strong>Myspace</strong> is a communication and sharing platform created to connect people. Here you can express your ideas through our <strong>interactive blog</strong>, where you have the freedom to create and publish posts about any topic that interests you.</p>
+                        <p>Additionally, we offer a <strong>real-time chat</strong> system that allows you to instantly chat with other community members. Whether you want to exchange ideas, make new friends, or just socialize, Myspace is the right place for you.</p>
+                        <p>Our <strong>community</strong> is always growing, and each member contributes to making this space richer and more diverse. Join us and be part of this experience!</p>
                     </div>
                 </div>
 
@@ -75,27 +75,27 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
                 <div class="landing-section">
                     <h2 class="section-heading">
                         <span class="heading-icon">🚀</span>
-                        Como funciona
+                        How it works
                     </h2>
                     <div class="steps-row">
                         <div class="step-item">
                             <div class="step-num">1</div>
-                            <span>Explora o blog</span>
+                            <span>Explore the blog</span>
                         </div>
                         <div class="step-connector"></div>
                         <div class="step-item">
                             <div class="step-num">2</div>
-                            <span>Cria conteúdo</span>
+                            <span>Create content</span>
                         </div>
                         <div class="step-connector"></div>
                         <div class="step-item">
                             <div class="step-num">3</div>
-                            <span>Usa o chat</span>
+                            <span>Use the chat</span>
                         </div>
                         <div class="step-connector"></div>
                         <div class="step-item">
                             <div class="step-num">4</div>
-                            <span>Interage!</span>
+                            <span>Interact!</span>
                         </div>
                     </div>
                 </div>
@@ -107,24 +107,24 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
                 <div class="landing-section actions-section">
                     <h2 class="section-heading">
                         <span class="heading-icon">⚡</span>
-                        Começar agora
+                        Get started
                     </h2>
                     <div class="quick-btns">
                         <a href="blog.php" class="quick-btn primary">
-                            <span>✍️</span> Criar Post
+                            <span>✍️</span> Create Post
                         </a>
                         <a href="chat.php" class="quick-btn secondary">
-                            <span>💬</span> Iniciar Chat
+                            <span>💬</span> Start Chat
                         </a>
                         <a href="blog.php" class="quick-btn tertiary">
-                            <span>📖</span> Ver Blog
+                            <span>📖</span> View Blog
                         </a>
                     </div>
                 </div>
 
                 <!-- Footer inside box -->
                 <div class="box-footer">
-                    <p>&copy; 2026 Myspace. Todos os direitos reservados.</p>
+                    <p>&copy; 2026 Myspace. All rights reserved.</p>
                 </div>
             </div>
         </div>

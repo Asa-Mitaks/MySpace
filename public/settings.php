@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$newName, $newEmail, $userId]);
                 $_SESSION['username'] = $newName;
                 $username = $newName;
-                $message = 'Perfil atualizado com sucesso!';
+                $message = 'Profile updated successfully!';
                 $messageType = 'success';
                 
                 // Refresh user data
@@ -65,18 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
                         $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
                         $stmt->execute([$hashedPassword, $userId]);
-                        $message = 'Palavra-passe alterada com sucesso!';
+                        $message = 'Password changed successfully!';
                         $messageType = 'success';
                     } else {
-                        $message = 'A nova palavra-passe deve ter pelo menos 6 caracteres.';
+                        $message = 'New password must be at least 6 characters.';
                         $messageType = 'error';
                     }
                 } else {
-                    $message = 'As palavras-passe não coincidem.';
+                    $message = 'Passwords do not match.';
                     $messageType = 'error';
                 }
             } else {
-                $message = 'Palavra-passe atual incorreta.';
+                $message = 'Current password is incorrect.';
                 $messageType = 'error';
             }
         }
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -504,7 +504,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="admin.php" class="btn-admin">🛡️ Admin</a></li>
             <?php endif; ?>
             <li>
-                <a href="profile.php" class="profile-btn">Perfil</a>
+                <a href="profile.php" class="profile-btn">Profile</a>
             </li>
         </ul>
     </nav>
@@ -514,7 +514,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="settings-header">
             <h1>⚙️ Settings</h1>
             <div class="dark-mode-toggle" onclick="toggleDarkMode()">
-                <span class="toggle-label">Modo Escuro</span>
+                <span class="toggle-label">Dark Mode</span>
                 <div class="toggle-switch">
                     <div class="toggle-slider" id="darkModeSlider"></div>
                 </div>
@@ -530,20 +530,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Profile Settings -->
         <div class="settings-card">
             <div class="settings-card-header">
-                <h2>👤 Informações do Perfil</h2>
+                <h2>👤 Profile Information</h2>
             </div>
             <div class="settings-card-body">
                 <form method="POST" action="settings.php">
                     <input type="hidden" name="action" value="update_profile">
                     <div class="form-group">
-                        <label for="name">Nome</label>
+                        <label for="name">Name</label>
                         <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
                     </div>
-                    <button type="submit" class="btn-save">Guardar Alterações</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
                 </form>
             </div>
         </div>
@@ -551,31 +551,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Password Settings -->
         <div class="settings-card">
             <div class="settings-card-header">
-                <h2>🔐 Alterar Palavra-passe</h2>
+                <h2>🔐 Change Password</h2>
             </div>
             <div class="settings-card-body">
                 <form method="POST" action="settings.php">
                     <input type="hidden" name="action" value="change_password">
                     <div class="form-group">
-                        <label for="current_password">Palavra-passe Atual</label>
+                        <label for="current_password">Current Password</label>
                         <input type="password" id="current_password" name="current_password" required>
                     </div>
                     <div class="form-group">
-                        <label for="new_password">Nova Palavra-passe</label>
+                        <label for="new_password">New Password</label>
                         <input type="password" id="new_password" name="new_password" required>
                     </div>
                     <div class="form-group">
-                        <label for="confirm_password">Confirmar Nova Palavra-passe</label>
+                        <label for="confirm_password">Confirm New Password</label>
                         <input type="password" id="confirm_password" name="confirm_password" required>
                     </div>
-                    <button type="submit" class="btn-save">Alterar Palavra-passe</button>
+                    <button type="submit" class="btn-save">Change Password</button>
                 </form>
             </div>
         </div>
 
         <!-- Delete Account Button -->
         <div style="text-align: center; margin-top: 30px;">
-            <button type="button" class="btn-delete-account" onclick="openDeleteModal()">Eliminar Conta</button>
+            <button type="button" class="btn-delete-account" onclick="openDeleteModal()">Delete Account</button>
         </div>
     </main>
 
@@ -583,14 +583,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-content">
             <div class="modal-icon">⚠️</div>
-            <h3>Eliminar Conta</h3>
-            <p>Ao eliminar a tua conta, todos os teus dados serão permanentemente removidos, incluindo posts, comentários, mensagens e amizades.</p>
-            <p><strong>Esta ação não pode ser revertida.</strong></p>
+            <h3>Delete Account</h3>
+            <p>By deleting your account, all your data will be permanently removed, including posts, comments, messages and friendships.</p>
+            <p><strong>This action cannot be undone.</strong></p>
             <div class="modal-buttons">
-                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
                 <form method="POST" action="settings.php" style="display: inline;">
                     <input type="hidden" name="action" value="delete_account">
-                    <button type="submit" class="btn-confirm-delete">Sim, Eliminar</button>
+                    <button type="submit" class="btn-confirm-delete">Yes, Delete</button>
                 </form>
             </div>
         </div>

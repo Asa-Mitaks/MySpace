@@ -94,6 +94,141 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             margin: 0;
             padding: 0;
         }
+
+        /* Edit Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body.dark-mode .modal-content {
+            background: #2d2d44;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .modal-content h3 {
+            color: #eee;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .modal-content textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        body.dark-mode .modal-content textarea {
+            background: #40444b;
+            border-color: #40444b;
+            color: #eee;
+        }
+
+        body.dark-mode .modal-content textarea:focus {
+            border-color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        body.dark-mode .btn-cancel {
+            background: #40444b;
+            color: #eee;
+        }
+
+        body.dark-mode .btn-cancel:hover {
+            background: #4a4e57;
+        }
+
+        .btn-confirm-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-confirm-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -110,10 +245,10 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             <li><a href="admin.php" class="btn-admin">🛡️ Admin</a></li>
             <?php endif; ?>
             <li>
-                <a href="profile.php" class="profile-btn">Perfil</a>
+                <a href="profile.php" class="profile-btn">Profile</a>
             </li>
             <li>
-                <a href="logout.php" class="btn-logout">Sair</a>
+                <a href="logout.php" class="btn-logout">Logout</a>
             </li>
         </ul>
     </nav>
@@ -124,11 +259,11 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             <div class="chat-container">
                 <div class="chat-header">
                     <?php if ($chatPartnerId && $chatPartnerName): ?>
-                        <h1>💬 Chat com <?php echo htmlspecialchars($chatPartnerName); ?></h1>
-                        <p><a href="chat.php" style="color: rgba(255,255,255,0.8); text-decoration: none;">← Voltar ao chat público</a></p>
+                        <h1>💬 Chat with <?php echo htmlspecialchars($chatPartnerName); ?></h1>
+                        <p><a href="chat.php" style="color: rgba(255,255,255,0.8); text-decoration: none;">← Back to public chat</a></p>
                     <?php else: ?>
                         <h1>💬 Chat Room</h1>
-                        <p>Conversa com a comunidade em tempo real</p>
+                        <p>Chat with the community in real time</p>
                     <?php endif; ?>
                 </div>
                 
@@ -136,7 +271,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                     <?php if (empty($messages)): ?>
                         <div class="no-messages">
                             <span>💭</span>
-                            <p>Ainda não há mensagens. Sê o primeiro a escrever!</p>
+                            <p>No messages yet. Be the first to write!</p>
                         </div>
                     <?php else: ?>
                         <?php 
@@ -165,15 +300,15 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                                     </button>
                                     <div class="menu-dropdown" id="menu-<?php echo $msg['id']; ?>">
                                         <button type="button" onclick="editMessage(<?php echo $msg['id']; ?>, '<?php echo addslashes(htmlspecialchars($msg['content'], ENT_QUOTES)); ?>')">
-                                            Editar
+                                            Edit
                                         </button>
-                                        <form method="POST" action="chat.php<?php echo $chatPartnerId ? '?with=' . $chatPartnerId : ''; ?>" onsubmit="return confirm('Tens a certeza que queres eliminar esta mensagem?');">
+                                        <form method="POST" action="chat.php<?php echo $chatPartnerId ? '?with=' . $chatPartnerId : ''; ?>" onsubmit="return confirm('Are you sure you want to delete this message?');">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="message_id" value="<?php echo $msg['id']; ?>">
                                             <?php if ($chatPartnerId): ?>
                                                 <input type="hidden" name="receiver_id" value="<?php echo $chatPartnerId; ?>">
                                             <?php endif; ?>
-                                            <button type="submit">Eliminar</button>
+                                            <button type="submit">Delete</button>
                                         </form>
                                     </div>
                                 </div>
@@ -188,9 +323,9 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                         <input type="hidden" name="receiver_id" value="<?php echo $chatPartnerId; ?>">
                     <?php endif; ?>
                     <div class="chat-input-group">
-                        <input type="text" name="message" placeholder="Escreve a tua mensagem..." required autocomplete="off">
+                        <input type="text" name="message" placeholder="Write your message..." required autocomplete="off">
                         <button type="submit" class="btn-send">
-                            <span>Enviar</span>
+                            <span>Send</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                             </svg>
@@ -203,13 +338,13 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         <!-- Friends Sidebar -->
         <aside class="chat-sidebar">
             <div class="sidebar-header">
-                <h3>👥 Amigos</h3>
+                <h3>👥 Friends</h3>
             </div>
             <div class="friends-chat-list">
                 <?php if (empty($friends)): ?>
                     <div class="no-friends">
-                        <p>Ainda não tens amigos.</p>
-                        <a href="blog.php">Encontrar amigos</a>
+                        <p>You don't have any friends yet.</p>
+                        <a href="blog.php">Find friends</a>
                     </div>
                 <?php else: ?>
                     <?php foreach ($friends as $friend): ?>
@@ -223,13 +358,33 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                             </div>
                             <div class="friend-chat-info">
                                 <span class="friend-chat-name"><?php echo htmlspecialchars($friend['name']); ?></span>
-                                <span class="friend-chat-status">Clica para conversar</span>
+                                <span class="friend-chat-status">Click to chat</span>
                             </div>
                         </a>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
         </aside>
+    </div>
+
+    <!-- Edit Message Modal -->
+    <div class="modal-overlay" id="editMessageModal">
+        <div class="modal-content">
+            <div class="modal-icon">✏️</div>
+            <h3>Edit Message</h3>
+            <form id="editMessageForm" method="POST" action="chat.php<?php echo $chatPartnerId ? '?with=' . $chatPartnerId : ''; ?>">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="message_id" id="editMessageId" value="">
+                <?php if ($chatPartnerId): ?>
+                    <input type="hidden" name="receiver_id" value="<?php echo $chatPartnerId; ?>">
+                <?php endif; ?>
+                <textarea name="new_content" id="editMessageContent" placeholder="Write your new message..." required></textarea>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-confirm-edit">Save</button>
+                </div>
+            </form>
+        </div>
     </div>
     
     <script src="js/app.js"></script>
@@ -278,57 +433,42 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             }
         });
 
-        // Edit message function
+        // Edit message function - open modal
         function editMessage(messageId, currentContent) {
             // Decode HTML entities
             const textarea = document.createElement('textarea');
             textarea.innerHTML = currentContent;
             const decodedContent = textarea.value;
             
-            const newContent = prompt('Editar mensagem:', decodedContent);
-            if (newContent !== null && newContent.trim() !== '' && newContent !== decodedContent) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = window.location.href;
-                
-                const actionInput = document.createElement('input');
-                actionInput.type = 'hidden';
-                actionInput.name = 'action';
-                actionInput.value = 'edit';
-                form.appendChild(actionInput);
-                
-                const messageIdInput = document.createElement('input');
-                messageIdInput.type = 'hidden';
-                messageIdInput.name = 'message_id';
-                messageIdInput.value = messageId;
-                form.appendChild(messageIdInput);
-                
-                const contentInput = document.createElement('input');
-                contentInput.type = 'hidden';
-                contentInput.name = 'new_content';
-                contentInput.value = newContent;
-                form.appendChild(contentInput);
-                
-                // Add receiver_id if in private chat
-                const urlParams = new URLSearchParams(window.location.search);
-                const withParam = urlParams.get('with');
-                if (withParam) {
-                    const receiverInput = document.createElement('input');
-                    receiverInput.type = 'hidden';
-                    receiverInput.name = 'receiver_id';
-                    receiverInput.value = withParam;
-                    form.appendChild(receiverInput);
-                }
-                
-                document.body.appendChild(form);
-                form.submit();
-            }
+            // Set values in the modal
+            document.getElementById('editMessageId').value = messageId;
+            document.getElementById('editMessageContent').value = decodedContent;
+            
+            // Show modal
+            document.getElementById('editMessageModal').classList.add('show');
+            
+            // Focus on textarea
+            setTimeout(() => {
+                document.getElementById('editMessageContent').focus();
+            }, 100);
             
             // Close the menu
             document.querySelectorAll('.menu-dropdown.show').forEach(menu => {
                 menu.classList.remove('show');
             });
         }
+
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editMessageModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editMessageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
     </script>
 </body>
 </html>

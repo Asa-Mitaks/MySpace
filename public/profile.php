@@ -132,11 +132,11 @@ $profileImage = $user['profile_image'] ?? null;
 ?>
 
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil - Myspace</title>
+    <title>Profile - Myspace</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         body {
@@ -603,10 +603,10 @@ $profileImage = $user['profile_image'] ?? null;
             <li><a href="admin.php" class="btn-admin">🛡️ Admin</a></li>
             <?php endif; ?>
             <li>
-                <a href="profile.php" class="profile-btn">Perfil</a>
+                <a href="profile.php" class="profile-btn">Profile</a>
             </li>
             <li>
-                <a href="logout.php" class="btn-logout">Sair</a>
+                <a href="logout.php" class="btn-logout">Logout</a>
             </li>
         </ul>
     </nav>
@@ -642,19 +642,19 @@ $profileImage = $user['profile_image'] ?? null;
                 </div>
                 <div class="stat-item">
                     <div class="stat-value"><?php echo $commentCount; ?></div>
-                    <div class="stat-label">Comentários</div>
+                    <div class="stat-label">Comments</div>
                 </div>
                 <div class="stat-item friends">
                     <div class="stat-value"><?php echo $friendCount; ?></div>
-                    <div class="stat-label">👥 Amigos</div>
+                    <div class="stat-label">👥 Friends</div>
                 </div>
                 <div class="stat-item likes-given">
                     <div class="stat-value"><?php echo $likesGiven; ?></div>
-                    <div class="stat-label">❤️ Likes Dados</div>
+                    <div class="stat-label">❤️ Likes Given</div>
                 </div>
                 <div class="stat-item likes-received">
                     <div class="stat-value"><?php echo $likesReceived; ?></div>
-                    <div class="stat-label">💚 Likes Recebidos</div>
+                    <div class="stat-label">💚 Likes Received</div>
                 </div>
             </div>
 
@@ -662,7 +662,7 @@ $profileImage = $user['profile_image'] ?? null;
                 <div class="info-item">
                     <span class="info-icon">👤</span>
                     <div class="info-content">
-                        <div class="info-label">Nome de utilizador</div>
+                        <div class="info-label">Username</div>
                         <div class="info-value"><?php echo htmlspecialchars($user['name']); ?></div>
                     </div>
                 </div>
@@ -676,7 +676,7 @@ $profileImage = $user['profile_image'] ?? null;
                 <div class="info-item">
                     <span class="info-icon">📅</span>
                     <div class="info-content">
-                        <div class="info-label">Membro desde</div>
+                        <div class="info-label">Member since</div>
                         <div class="info-value"><?php echo date('d M Y', strtotime($user['created_at'])); ?></div>
                     </div>
                 </div>
@@ -685,7 +685,7 @@ $profileImage = $user['profile_image'] ?? null;
             <!-- Friends Section -->
             <?php if ($friendCount > 0): ?>
             <div class="friends-section">
-                <h3 class="friends-title">👥 Amigos (<?php echo $friendCount; ?>)</h3>
+                <h3 class="friends-title">👥 Friends (<?php echo $friendCount; ?>)</h3>
                 <div class="friends-list">
                     <?php foreach ($friends as $friend): ?>
                     <div class="friend-item">
@@ -699,7 +699,7 @@ $profileImage = $user['profile_image'] ?? null;
                         <div class="friend-info">
                             <div class="friend-name"><?php echo htmlspecialchars($friend['name']); ?></div>
                         </div>
-                        <button type="button" class="btn-remove-friend" title="Remover amigo" onclick="openRemoveFriendModal(<?php echo $friend['id']; ?>, '<?php echo htmlspecialchars(addslashes($friend['name'])); ?>')">✕</button>
+                        <button type="button" class="btn-remove-friend" title="Remove friend" onclick="openRemoveFriendModal(<?php echo $friend['id']; ?>, '<?php echo htmlspecialchars(addslashes($friend['name'])); ?>')">✕</button>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -712,14 +712,14 @@ $profileImage = $user['profile_image'] ?? null;
     <div class="modal-overlay" id="removeFriendModal">
         <div class="modal-content">
             <div class="modal-icon">👥</div>
-            <h3>Remover Amigo</h3>
-            <p>Tens a certeza que queres remover <strong id="friendNameToRemove"></strong> dos teus amigos?</p>
+            <h3>Remove Friend</h3>
+            <p>Are you sure you want to remove <strong id="friendNameToRemove"></strong> from your friends?</p>
             <div class="modal-buttons">
-                <button type="button" class="btn-cancel" onclick="closeRemoveFriendModal()">Cancelar</button>
+                <button type="button" class="btn-cancel" onclick="closeRemoveFriendModal()">Cancel</button>
                 <form id="removeFriendForm" action="profile.php" method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="remove_friend">
                     <input type="hidden" name="friend_id" id="friendIdToRemove" value="">
-                    <button type="submit" class="btn-confirm-remove">Sim, Remover</button>
+                    <button type="submit" class="btn-confirm-remove">Yes, Remove</button>
                 </form>
             </div>
         </div>

@@ -595,9 +595,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="landing-navbar">
         <a href="index.php" class="logo">Myspace</a>
         <div class="nav-links">
-            <a href="#features">Funcionalidades</a>
-            <a href="#how-it-works">Como Funciona</a>
-            <a href="#login" class="btn-login">Entrar</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
         </div>
     </nav>
 
@@ -605,34 +604,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="hero" id="home">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Conecta-te e Partilha com a Comunidade</h1>
-                <p>Uma plataforma completa de comunicação onde podes criar posts no blog, conversar em tempo real e fazer parte de uma comunidade ativa.</p>
+                <h1>Connect and Share with the Community</h1>
+                <p>A complete communication platform where you can create blog posts, chat in real-time and be part of an active community.</p>
                 <div class="hero-buttons">
-                    <a href="public/register.php" class="btn-hero btn-hero-primary">Começar Agora</a>
-                    <a href="#features" class="btn-hero btn-hero-secondary">Saber Mais</a>
+                    <a href="public/register.php" class="btn-hero btn-hero-primary">Get Started</a>
+                    <a href="#features" class="btn-hero btn-hero-secondary">Learn More</a>
                 </div>
             </div>
             <div class="login-box" id="login">
-                <h2>Bem-vindo de volta!</h2>
-                <p class="subtitle">Entra na tua conta para continuar</p>
+                <h2>Welcome back!</h2>
+                <p class="subtitle">Log in to your account to continue</p>
                 <?php if (isset($_GET['registered'])): ?>
-                    <div class="success">Registo efetuado com sucesso! Faz login.</div>
+                    <div class="success">Registration successful! Please log in.</div>
                 <?php endif; ?>
                 <?php if (isset($error)): ?>
                     <div class="error"><?php echo htmlspecialchars($error); ?></div>
                 <?php endif; ?>
                 <form action="index.php" method="POST">
                     <div class="form-group">
-                        <label for="name">Nome de utilizador</label>
-                        <input type="text" id="name" name="name" placeholder="O teu nome" required>
+                        <label for="name">Username</label>
+                        <input type="text" id="name" name="name" placeholder="Your name" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">Palavra-passe</label>
+                        <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="••••••••" required>
                     </div>
-                    <button type="submit">Entrar</button>
+                    <button type="submit">Log In</button>
                 </form>
-                <p class="register-link">Ainda não tens conta? <a href="public/register.php">Regista-te aqui</a></p>
+                <p class="register-link">Don't have an account? <a href="public/register.php">Register here</a></p>
             </div>
         </div>
     </section>
@@ -641,39 +640,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="features" id="features">
         <div class="features-container">
             <div class="section-title">
-                <h2>O que oferecemos</h2>
-                <p>Descobre todas as funcionalidades da nossa plataforma</p>
+                <h2>What we offer</h2>
+                <p>Discover all the features of our platform</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">📝</div>
-                    <h3>Blog Interativo</h3>
-                    <p>Cria e partilha os teus posts com toda a comunidade. Expressa as tuas ideias, partilha conhecimento e recebe feedback dos outros membros.</p>
+                    <h3>Interactive Blog</h3>
+                    <p>Create and share your posts with the entire community. Express your ideas, share knowledge and get feedback from other members.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">💬</div>
-                    <h3>Chat em Tempo Real</h3>
-                    <p>Conversa instantaneamente com outros utilizadores. Sistema de mensagens privadas e conversas em grupo para uma comunicação rápida e eficiente.</p>
+                    <h3>Real-Time Chat</h3>
+                    <p>Chat instantly with other users. Private messaging and group conversations for fast and efficient communication.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">👥</div>
-                    <h3>Comunidade Ativa</h3>
-                    <p>Faz parte de uma comunidade vibrante. Conecta-te com pessoas que partilham os teus interesses e expande a tua rede de contactos.</p>
+                    <h3>Active Community</h3>
+                    <p>Be part of a vibrant community. Connect with people who share your interests and expand your network.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🔒</div>
-                    <h3>Seguro e Privado</h3>
-                    <p>A tua privacidade é a nossa prioridade. Sistema de autenticação seguro e controlo total sobre as tuas informações pessoais.</p>
+                    <h3>Secure and Private</h3>
+                    <p>Your privacy is our priority. Secure authentication system and full control over your personal information.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📱</div>
-                    <h3>Design Responsivo</h3>
-                    <p>Acede de qualquer dispositivo. A plataforma adapta-se perfeitamente ao teu computador, tablet ou smartphone.</p>
+                    <h3>Responsive Design</h3>
+                    <p>Access from any device. The platform adapts perfectly to your computer, tablet or smartphone.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
-                    <h3>Rápido e Intuitivo</h3>
-                    <p>Interface simples e fácil de usar. Navega sem complicações e encontra rapidamente o que procuras.</p>
+                    <h3>Fast and Intuitive</h3>
+                    <p>Simple and easy-to-use interface. Navigate without complications and quickly find what you're looking for.</p>
                 </div>
             </div>
         </div>
@@ -683,29 +682,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="how-it-works" id="how-it-works">
         <div class="how-it-works-container">
             <div class="section-title">
-                <h2>Como Funciona</h2>
-                <p>Começa a usar em apenas 4 passos simples</p>
+                <h2>How It Works</h2>
+                <p>Get started in just 4 simple steps</p>
             </div>
             <div class="steps">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <h3>Cria a tua conta</h3>
-                    <p>Regista-te gratuitamente em poucos segundos</p>
+                    <h3>Create your account</h3>
+                    <p>Register for free in seconds</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3>Personaliza o perfil</h3>
-                    <p>Adiciona informações sobre ti</p>
+                    <h3>Customize your profile</h3>
+                    <p>Add information about yourself</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3>Explora a plataforma</h3>
-                    <p>Descobre posts e utilizadores</p>
+                    <h3>Explore the platform</h3>
+                    <p>Discover posts and users</p>
                 </div>
                 <div class="step">
                     <div class="step-number">4</div>
-                    <h3>Começa a interagir</h3>
-                    <p>Publica, comenta e conversa</p>
+                    <h3>Start interacting</h3>
+                    <p>Post, comment and chat</p>
                 </div>
             </div>
         </div>
@@ -713,9 +712,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- CTA Section -->
     <section class="cta">
-        <h2>Pronto para começar?</h2>
-        <p>Junta-te a milhares de utilizadores que já fazem parte da nossa comunidade. Regista-te gratuitamente hoje!</p>
-        <a href="public/register.php" class="btn-hero btn-hero-primary">Criar Conta Grátis</a>
+        <h2>Ready to get started?</h2>
+        <p>Join thousands of users who are already part of our community. Register for free today!</p>
+        <a href="public/register.php" class="btn-hero btn-hero-primary">Create Free Account</a>
     </section>
 
     <!-- Footer -->
@@ -723,35 +722,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="footer-content">
             <div class="footer-brand">
                 <h3>Myspace</h3>
-                <p>Uma plataforma completa para comunicação e partilha. Conecta-te com a comunidade e partilha as tuas ideias.</p>
+                <p>A complete platform for communication and sharing. Connect with the community and share your ideas.</p>
             </div>
             <div class="footer-links">
-                <h4>Plataforma</h4>
+                <h4>Platform</h4>
                 <ul>
-                    <li><a href="#features">Funcionalidades</a></li>
-                    <li><a href="#how-it-works">Como Funciona</a></li>
-                    <li><a href="public/register.php">Registar</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="public/register.php">Register</a></li>
                 </ul>
             </div>
             <div class="footer-links">
-                <h4>Recursos</h4>
+                <h4>Resources</h4>
                 <ul>
                     <li><a href="blog.php">Blog</a></li>
                     <li><a href="chat.php">Chat</a></li>
-                    <li><a href="#">Ajuda</a></li>
+                    <li><a href="#">Help</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Legal</h4>
                 <ul>
-                    <li><a href="#">Termos de Uso</a></li>
-                    <li><a href="#">Privacidade</a></li>
-                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Contact</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Myspace. Todos os direitos reservados.</p>
+            <p>&copy; 2026 Myspace. All rights reserved.</p>
         </div>
     </footer>
 

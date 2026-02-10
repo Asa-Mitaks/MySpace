@@ -398,7 +398,7 @@ function formatDate($date) {
                 <p>Manage users, posts, and monitor activity</p>
             </div>
             <div class="dark-mode-toggle" onclick="toggleDarkMode()">
-                <span class="toggle-label">Modo Escuro</span>
+                <span class="toggle-label">Dark Mode</span>
                 <div class="toggle-switch">
                     <div class="toggle-slider" id="darkModeSlider"></div>
                 </div>

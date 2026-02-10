@@ -218,7 +218,7 @@ function formatDate($date) {
     $timestamp = strtotime($date);
     $diff = time() - $timestamp;
     
-    if ($diff < 60) return 'agora mesmo';
+    if ($diff < 60) return 'just now';
     if ($diff < 3600) return floor($diff / 60) . ' min';
     if ($diff < 86400) return floor($diff / 3600) . ' h';
     if ($diff < 604800) return floor($diff / 86400) . ' d';
@@ -242,7 +242,7 @@ if ($isLoggedIn) {
 ?>
 
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -864,6 +864,8 @@ if ($isLoggedIn) {
             border-radius: 16px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             overflow: hidden;
+            max-width: 650px;
+            margin-left: 70px;
         }
 
         .post-header {
@@ -1300,13 +1302,13 @@ if ($isLoggedIn) {
             <?php endif; ?>
             <?php if ($isLoggedIn): ?>
             <li>
-                <a href="profile.php" class="profile-btn">Perfil</a>
+                <a href="profile.php" class="profile-btn">Profile</a>
             </li>
             <li>
-                <a href="logout.php" class="btn-logout">Sair</a>
+                <a href="logout.php" class="btn-logout">Logout</a>
             </li>
             <?php else: ?>
-            <li><a href="index.php">Entrar</a></li>
+            <li><a href="index.php">Login</a></li>
             <?php endif; ?>
         </ul>
     </nav>
@@ -1317,7 +1319,7 @@ if ($isLoggedIn) {
         <main class="blog-main">
             <?php if (!$isLoggedIn): ?>
             <div class="login-prompt">
-                <p>🔐 <a href="index.php">Entra na tua conta</a> para criar posts e comentar.</p>
+                <p>🔐 <a href="index.php">Log in to your account</a> to create posts and comments.</p>
             </div>
             <?php endif; ?>
 
@@ -1326,8 +1328,8 @@ if ($isLoggedIn) {
             <?php if (empty($posts)): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">📝</div>
-                <h3>Ainda não há posts</h3>
-                <p>Sê o primeiro a partilhar algo com a comunidade!</p>
+                <h3>No posts yet</h3>
+                <p>Be the first to share something with the community!</p>
             </div>
             <?php else: ?>
                 <?php foreach ($posts as $post): ?>
@@ -1356,11 +1358,11 @@ if ($isLoggedIn) {
                         <div class="post-options">
                             <button class="post-options-btn" onclick="togglePostMenu(<?php echo $post['id']; ?>)">•••</button>
                             <div class="post-options-dropdown" id="postMenu-<?php echo $post['id']; ?>">
-                                <button onclick="openEditModal(<?php echo $post['id']; ?>, '<?php echo addslashes(htmlspecialchars($post['title'])); ?>', '<?php echo addslashes(htmlspecialchars($post['description'] ?? '')); ?>', '<?php echo addslashes(htmlspecialchars($post['content'])); ?>')">Editar</button>
+                                <button onclick="openEditModal(<?php echo $post['id']; ?>, '<?php echo addslashes(htmlspecialchars($post['title'])); ?>', '<?php echo addslashes(htmlspecialchars($post['description'] ?? '')); ?>', '<?php echo addslashes(htmlspecialchars($post['content'])); ?>')">Edit</button>
                                 <form action="blog.php" method="POST" class="delete-form">
                                     <input type="hidden" name="action" value="delete_post">
                                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                                    <button type="submit" class="btn-delete-option" onclick="return confirm('Tens a certeza que queres apagar este post?')">Apagar</button>
+                                    <button type="submit" class="btn-delete-option" onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
                                 </form>
                             </div>
                         </div>
@@ -1401,7 +1403,7 @@ if ($isLoggedIn) {
                         
                         <button class="action-btn" onclick="toggleComments(<?php echo $post['id']; ?>)">
                             <span>💬</span>
-                            <span><?php echo $commentCount; ?> <?php echo $commentCount == 1 ? 'Comentário' : 'Comentários'; ?></span>
+                            <span><?php echo $commentCount; ?> <?php echo $commentCount == 1 ? 'Comment' : 'Comments'; ?></span>
                         </button>
                     </div>
 
@@ -1429,7 +1431,7 @@ if ($isLoggedIn) {
                                             <input type="hidden" name="action" value="delete_comment">
                                             <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                             <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                                            <button type="submit" class="comment-delete" onclick="return confirm('Apagar comentário?')">Apagar</button>
+                                            <button type="submit" class="comment-delete" onclick="return confirm('Delete comment?')">Delete</button>
                                         </form>
                                         <?php endif; ?>
                                     </div>
@@ -1441,8 +1443,8 @@ if ($isLoggedIn) {
                             <form action="blog.php" method="POST" class="comment-form">
                                 <input type="hidden" name="action" value="add_comment">
                                 <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                                <textarea name="comment" placeholder="Escreve um comentário..." rows="1" required></textarea>
-                                <button type="submit">Enviar</button>
+                                <textarea name="comment" placeholder="Write a comment..." rows="1" required></textarea>
+                                <button type="submit">Send</button>
                             </form>
                             <?php endif; ?>
                         </div>
@@ -1457,7 +1459,7 @@ if ($isLoggedIn) {
     <?php if ($isLoggedIn): ?>
     <aside class="blog-sidebar">
         <div class="sidebar-card">
-            <h3 class="sidebar-title">👥 Sugestões para ti</h3>
+            <h3 class="sidebar-title">👥 Suggestions for you</h3>
             <?php if (!empty($suggestedUsers)): ?>
             <div class="suggested-users">
                 <?php foreach ($suggestedUsers as $user): ?>
@@ -1471,18 +1473,18 @@ if ($isLoggedIn) {
                     </div>
                     <div class="suggested-info">
                         <div class="suggested-name"><?php echo htmlspecialchars($user['name']); ?></div>
-                        <div class="suggested-joined">Juntou-se <?php echo formatDate($user['created_at']); ?></div>
+                        <div class="suggested-joined">Joined <?php echo formatDate($user['created_at']); ?></div>
                     </div>
                     <form action="blog.php" method="POST" style="margin: 0;">
                         <input type="hidden" name="action" value="add_friend">
                         <input type="hidden" name="friend_id" value="<?php echo $user['id']; ?>">
-                        <button type="submit" class="btn-add-friend" title="Adicionar amigo">+ Amigo</button>
+                        <button type="submit" class="btn-add-friend" title="Add friend">+ Friend</button>
                     </form>
                 </div>
                 <?php endforeach; ?>
             </div>
             <?php else: ?>
-            <p class="no-suggestions">Sem sugestões de momento</p>
+            <p class="no-suggestions">No suggestions at the moment</p>
             <?php endif; ?>
         </div>
     </aside>
@@ -1498,27 +1500,27 @@ if ($isLoggedIn) {
     <div class="modal-overlay" id="createPostModal">
         <div class="modal">
             <div class="modal-header">
-                <h2>Criar Novo Post</h2>
+                <h2>Create New Post</h2>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <form action="blog.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="create_post">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="title">Título</label>
-                        <input type="text" id="title" name="title" placeholder="Escreve um título apelativo..." required>
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" placeholder="Write a catchy title..." required>
                     </div>
                     <div class="form-group">
-                        <label for="description">Descrição (opcional)</label>
-                        <input type="text" id="description" name="description" placeholder="Uma breve descrição do teu post...">
+                        <label for="description">Description (optional)</label>
+                        <input type="text" id="description" name="description" placeholder="A brief description of your post...">
                     </div>
                     <div class="form-group">
-                        <label>Imagem (opcional)</label>
+                        <label>Image (optional)</label>
                         <div class="drop-zone" id="dropZone">
                             <div class="drop-zone-content" id="dropZoneContent">
                                 <span class="drop-zone-icon">📷</span>
-                                <p>Arrasta uma imagem ou <span class="browse-link">clica aqui</span></p>
-                                <p class="drop-zone-hint">PNG, JPG, GIF ou WEBP (máx. 5MB)</p>
+                                <p>Drag an image or <span class="browse-link">click here</span></p>
+                                <p class="drop-zone-hint">PNG, JPG, GIF or WEBP (max. 5MB)</p>
                             </div>
                             <div class="drop-zone-preview" id="dropZonePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
@@ -1528,13 +1530,13 @@ if ($isLoggedIn) {
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="content">Conteúdo</label>
-                        <textarea id="content" name="content" rows="5" placeholder="Partilha as tuas ideias..." required></textarea>
+                        <label for="content">Content</label>
+                        <textarea id="content" name="content" rows="5" placeholder="Share your ideas..." required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-publish">Publicar</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-publish">Publish</button>
                 </div>
             </form>
         </div>
@@ -1544,7 +1546,7 @@ if ($isLoggedIn) {
     <div class="modal-overlay" id="editPostModal">
         <div class="modal">
             <div class="modal-header">
-                <h2>Editar Post</h2>
+                <h2>Edit Post</h2>
                 <button class="modal-close" onclick="closeEditModal()">&times;</button>
             </div>
             <form action="blog.php" method="POST">
@@ -1552,21 +1554,21 @@ if ($isLoggedIn) {
                 <input type="hidden" name="post_id" id="edit_post_id">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="edit_title">Título</label>
+                        <label for="edit_title">Title</label>
                         <input type="text" id="edit_title" name="title" required>
                     </div>
                     <div class="form-group">
-                        <label for="edit_description">Descrição (opcional)</label>
+                        <label for="edit_description">Description (optional)</label>
                         <input type="text" id="edit_description" name="description">
                     </div>
                     <div class="form-group">
-                        <label for="edit_content">Conteúdo</label>
+                        <label for="edit_content">Content</label>
                         <textarea id="edit_content" name="content" rows="5" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" onclick="closeEditModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-publish">Guardar</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-publish">Save</button>
                 </div>
             </form>
         </div>
@@ -1681,13 +1683,13 @@ if ($isLoggedIn) {
                 
                 // Validate file type
                 if (!file.type.match(/image\/(jpeg|png|gif|webp)/)) {
-                    alert('Por favor, seleciona uma imagem válida (PNG, JPG, GIF ou WEBP)');
+                    alert('Please select a valid image (PNG, JPG, GIF or WEBP)');
                     return;
                 }
                 
                 // Validate file size (5MB max)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('A imagem é demasiado grande. O limite é 5MB.');
+                    alert('The image is too large. Maximum size is 5MB.');
                     return;
                 }
                 
