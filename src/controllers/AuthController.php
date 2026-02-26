@@ -70,5 +70,83 @@ class AuthController {
     public function isAuthenticated() {
         return isset($_SESSION['user_id']);
     }
+
+    /**
+     * Generate JWT token for WebSocket authentication
+     */
+    public function generateWebSocketToken($userId) {
+        // Get user info for token
+        $stmt = $this->db->prepare("SELECT id, name, email, profile_image FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$user) {
+            return null;
+        }
+
+        // Create JWT payload
+        $payload = [
+            'userId' => $user['id'],
+            'userInfo' => [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'profile_image' => $user['profile_image']
+            ],
+            'type' => 'websocket',
+            'timestamp' => time(),
+            'exp' => time() + (24 * 60 * 60)
+        ];
+
+        // Simple JWT implementation (for development)
+        return $this->generateSimpleJWT($payload);
+    }
+
+    /**
+     * Simple JWT implementation (fallback)
+     */
+    private function generateSimpleJWT($payload) {
+        $header = json_encode(['alg' => 'HS256', 'typ' => 'JWT']);
+        $payloadJson = json_encode($payload);
+        $secret = 'myspace_jwt_secret_key_2024_change_in_production_please_use_strong_random_string';
+        
+        $headerEncoded = $this->base64UrlEncode($header);
+        $payloadEncoded = $this->base64UrlEncode($payloadJson);
+        
+        $signature = hash_hmac('sha256', $headerEncoded . '.' . $payloadEncoded, $secret, true);
+        $signatureEncoded = $this->base64UrlEncode($signature);
+        
+        return $headerEncoded . '.' . $payloadEncoded . '.' . $signatureEncoded;
+    }
+
+    /**
+     * Base64 URL encode
+     */
+    private function base64UrlEncode($data) {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    /**
+     * Validate WebSocket token with Node.js server
+     */
+    public function validateWebSocketToken($token) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'http://localhost:3002/validate-token');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['token' => $token]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            return false;
+        }
+        
+        $data = json_decode($response, true);
+        return $data['valid'] ?? false;
+    }
 }
-?>
