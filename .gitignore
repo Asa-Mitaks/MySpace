@@ -1,0 +1,8 @@
+/vendor/
+.env
+composer.phar
+composer-setup.php
+*.log
+/node_modules/
+.DS_Store
+Thumbs.db
