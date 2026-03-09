@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$messageModel = new Message($userId, null, null);
+$messageModel = new Message();
 $chatController = new ChatController($messageModel);
 $messages = $chatController->getMessages($userId, null) ?? [];
 

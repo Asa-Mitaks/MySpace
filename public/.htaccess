@@ -4,6 +4,9 @@ DirectoryIndex index.php
 # Enable URL rewriting
 RewriteEngine On
 
+# Allow access to api folder
+RewriteRule ^api/ - [L]
+
 # If the request is for a real file or directory, serve it directly
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

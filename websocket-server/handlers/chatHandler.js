@@ -27,14 +27,7 @@ class ChatHandler {
         
         this.socket.emit('chat_history', {
           roomId,
-          messages: messages.map(msg => ({
-            id: msg.id,
-            content: msg.message,
-            senderId: msg.sender_id,
-            senderName: msg.sender_name,
-            senderAvatar: msg.profile_image,
-            timestamp: msg.created_at
-          }))
+          messages: this.formatMessages(messages)
         });
         
         console.log(`User ${this.userId} joined private room with ${roomId}`);
@@ -48,14 +41,7 @@ class ChatHandler {
         
         this.socket.emit('chat_history', {
           roomId,
-          messages: messages.map(msg => ({
-            id: msg.id,
-            content: msg.message,
-            senderId: msg.sender_id,
-            senderName: msg.sender_name,
-            senderAvatar: msg.profile_image,
-            timestamp: msg.created_at
-          }))
+          messages: this.formatMessages(messages)
         });
         
         console.log(`User ${this.userId} joined public room: ${roomId}`);
@@ -74,7 +60,24 @@ class ChatHandler {
     }
   }
 
-  // Handle sending messages
+  // Format messages for client (including media)
+  formatMessages(messages) {
+    return messages.map(msg => ({
+      id: msg.id,
+      content: msg.message,
+      senderId: msg.sender_id,
+      senderName: msg.sender_name,
+      senderAvatar: msg.profile_image,
+      timestamp: msg.created_at,
+      messageType: msg.message_type || 'text',
+      mediaUrl: msg.media_url || null,
+      mediaThumbnail: msg.media_thumbnail || null,
+      mediaSize: msg.media_size || null,
+      mediaName: msg.media_name || null
+    }));
+  }
+
+  // Handle sending text messages
   async handleSendMessage(data) {
     try {
       const { roomId, content, isPrivate = false } = data;
@@ -83,11 +86,11 @@ class ChatHandler {
         return this.socket.emit('error', { message: 'Message cannot be empty' });
       }
       
-      // Save message to database
+      // Save message to database (text message)
       const messageId = await MessageQueries.create(
         this.userId, 
         isPrivate ? roomId : null, 
-        content
+        content.trim()
       );
       
       // Prepare message object
@@ -98,6 +101,7 @@ class ChatHandler {
         senderName: this.userInfo.name,
         senderAvatar: this.userInfo.profile_image,
         timestamp: new Date().toISOString(),
+        messageType: 'text',
         roomId
       };
       
@@ -110,6 +114,68 @@ class ChatHandler {
     } catch (error) {
       console.error('Send message error:', error);
       this.socket.emit('error', { message: 'Failed to send message' });
+    }
+  }
+
+  // Handle sending media messages (image or video)
+  async handleSendMediaMessage(data) {
+    try {
+      const { roomId, mediaData, caption = '', isPrivate = false } = data;
+      
+      if (!mediaData || !mediaData.url) {
+        return this.socket.emit('error', { message: 'Media data is required' });
+      }
+      
+      // Validate media type
+      const validTypes = ['image', 'video'];
+      if (!validTypes.includes(mediaData.type)) {
+        return this.socket.emit('error', { message: 'Invalid media type' });
+      }
+      
+      // Save media message to database
+      const messageId = await MessageQueries.createMediaMessage(
+        this.userId,
+        isPrivate ? roomId : null,
+        mediaData,
+        caption.trim()
+      );
+      
+      // Prepare message object
+      const messageData = {
+        id: messageId,
+        content: caption.trim(),
+        senderId: this.userId,
+        senderName: this.userInfo.name,
+        senderAvatar: this.userInfo.profile_image,
+        timestamp: new Date().toISOString(),
+        messageType: mediaData.type,
+        mediaUrl: mediaData.url,
+        mediaThumbnail: mediaData.thumbnail || null,
+        mediaSize: mediaData.size || null,
+        mediaName: mediaData.name || null,
+        roomId
+      };
+      
+      // Broadcast to room
+      const roomName = isPrivate ? `private_${roomId}` : roomId;
+      this.io.to(roomName).emit('new_message', messageData);
+      
+      // Also emit media_upload_ack to sender
+      this.socket.emit('media_upload_ack', {
+        messageId,
+        status: 'success'
+      });
+      
+      console.log(`Media message sent in ${isPrivate ? 'private' : 'public'} room ${roomId}`);
+      
+    } catch (error) {
+      console.error('Send media message error:', error);
+      this.socket.emit('error', { message: 'Failed to send media message' });
+      this.socket.emit('media_upload_ack', {
+        messageId: null,
+        status: 'error',
+        error: error.message
+      });
     }
   }
 

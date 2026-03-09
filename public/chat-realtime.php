@@ -7,7 +7,7 @@ require_once '../src/controllers/AuthController.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
 
@@ -77,9 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     if ($receiverId) {
-        header('Location: chat.php?with=' . $receiverId);
+        header('Location: chat-realtime.php?with=' . $receiverId);
     } else {
-        header('Location: chat.php');
+        header('Location: chat-realtime.php');
     }
     exit;
 }
@@ -95,6 +95,10 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
     <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
     <title>Real-time Chat - Myspace</title>
     <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+    <script>
+        // WebSocket URL configuration (set by server for Heroku compatibility)
+        window.WEBSOCKET_URL = '<?php echo getenv("WEBSOCKET_URL") ?: "ws://localhost:3002"; ?>';
+    </script>
     <style>
         /* Enhanced real-time chat styles */
         .typing-indicator {
@@ -247,6 +251,172 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             margin-bottom: 2px;
         }
 
+        /* Media Upload Styles */
+        .media-buttons {
+            display: flex;
+            gap: 8px;
+            margin-right: 10px;
+        }
+
+        .media-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            color: #666;
+        }
+
+        .media-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .media-preview {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .media-preview-content {
+            position: relative;
+            display: inline-block;
+            max-width: 200px;
+        }
+
+        .media-preview img,
+        .media-preview video {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .remove-media-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .remove-media-btn:hover {
+            background: #c82333;
+        }
+
+        .media-caption-area {
+            margin-top: 8px;
+        }
+
+        .media-caption-area input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .media-caption-area input:focus {
+            border-color: #667eea;
+        }
+
+        /* Chat Media Styles */
+        .message-media {
+            margin-top: 8px;
+        }
+
+        .chat-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .chat-image:hover {
+            transform: scale(1.02);
+        }
+
+        .chat-video {
+            max-width: 400px;
+            max-height: 300px;
+            border-radius: 8px;
+            background: #000;
+        }
+
+        /* Upload Progress */
+        .upload-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .upload-progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .upload-progress-fill {
+            height: 100%;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+
+        .upload-progress-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        body.dark-mode .media-btn {
+            background: #40444b;
+            color: #aaa;
+        }
+
+        body.dark-mode .media-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        body.dark-mode .media-preview {
+            background: #2d2d44;
+        }
+
+        body.dark-mode .media-caption-area input {
+            background: #40444b;
+            border-color: #40444b;
+            color: #eee;
+        }
+
+        body.dark-mode .upload-progress {
+            background: #2d2d44;
+        }
+
         .friend-status {
             font-size: 12px;
             opacity: 0.7;
@@ -305,8 +475,41 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                     <?php if ($chatPartnerId): ?>
                         <input type="hidden" id="receiverId" value="<?php echo $chatPartnerId; ?>">
                     <?php endif; ?>
+                    
+                    <!-- Media Preview Area -->
+                    <div id="mediaPreview" class="media-preview" style="display: none;">
+                        <div class="media-preview-content">
+                            <div id="mediaPreviewContainer"></div>
+                            <button type="button" id="removeMediaBtn" class="remove-media-btn">&times;</button>
+                        </div>
+                        <div class="media-caption-area">
+                            <input type="text" id="mediaCaption" placeholder="Add a caption (optional)..." autocomplete="off">
+                        </div>
+                    </div>
+                    
                     <div class="chat-input-group">
-                        <input type="text" id="messageInput" placeholder="Write your message..." required autocomplete="off">
+                        <!-- Media Upload Buttons -->
+                        <div class="media-buttons">
+                            <label for="imageInput" class="media-btn" title="Send Image">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                            </label>
+                            <label for="videoInput" class="media-btn" title="Send Video">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="23 7 16 12 23 17 23 7"/>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                </svg>
+                            </label>
+                        </div>
+                        
+                        <!-- Hidden File Inputs -->
+                        <input type="file" id="imageInput" accept="image/jpeg,image/png,image/gif,image/webp" style="display: none;">
+                        <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime" style="display: none;">
+                        
+                        <input type="text" id="messageInput" placeholder="Write your message..." autocomplete="off">
                         <button type="submit" class="btn-send">
                             <span>Send</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -482,7 +685,133 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                     mySpaceWS.setTyping(false, roomId, isPrivate);
                 }, 2000);
             });
-        });
+            
+            // ========== Media Upload Handling ==========
+            const imageInput = document.getElementById('imageInput');
+            const videoInput = document.getElementById('videoInput');
+            const mediaPreview = document.getElementById('mediaPreview');
+            const mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
+            const removeMediaBtn = document.getElementById('removeMediaBtn');
+            const mediaCaption = document.getElementById('mediaCaption');
+            
+            let selectedMediaFile = null;
+            let selectedMediaType = null; // 'image' or 'video'
+            
+            // Handle image selection
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleMediaSelect(file, 'image');
+                }
+            });
+            
+            // Handle video selection
+            videoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleMediaSelect(file, 'video');
+                }
+            });
+            
+            // Handle media file selection
+            function handleMediaSelect(file, type) {
+                // Validate file type
+                if (type === 'image') {
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    if (!validTypes.includes(file.type)) {
+                        showNotification('Invalid image type. Allowed: JPEG, PNG, GIF, WebP');
+                        return;
+                    }
+                    if (file.size > 10 * 1024 * 1024) {
+                        showNotification('Image too large. Maximum size: 10MB');
+                        return;
+                    }
+                } else if (type === 'video') {
+                    const validTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
+                    if (!validTypes.includes(file.type)) {
+                        showNotification('Invalid video type. Allowed: MP4, WebM, MOV');
+                        return;
+                    }
+                    if (file.size > 100 * 1024 * 1024) {
+                        showNotification('Video too large. Maximum size: 100MB');
+                        return;
+                    }
+                }
+                
+                selectedMediaFile = file;
+                selectedMediaType = type;
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (type === 'image') {
+                        mediaPreviewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    } else {
+                        mediaPreviewContainer.innerHTML = `<video src="${e.target.result}" controls></video>`;
+                    }
+                    mediaPreview.style.display = 'block';
+                    messageInput.removeAttribute('required');
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // Remove selected media
+            removeMediaBtn.addEventListener('click', function() {
+                selectedMediaFile = null;
+                selectedMediaType = null;
+                mediaPreview.style.display = 'none';
+                mediaPreviewContainer.innerHTML = '';
+                mediaCaption.value = '';
+                imageInput.value = '';
+                videoInput.value = '';
+                messageInput.setAttribute('required', '');
+            });
+            
+            // Modify form submission to handle media
+            chatForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const roomId = chatPartnerId || 'general';
+                const isPrivate = !!chatPartnerId;
+                const caption = mediaCaption.value.trim();
+                
+                // Check if sending media
+                if (selectedMediaFile && selectedMediaType) {
+                    // Upload and send media
+                    showNotification('Uploading media...');
+                    
+                    try {
+                        const success = await mySpaceWS.sendMediaMessage(
+                            selectedMediaFile,
+                            roomId,
+                            isPrivate,
+                            caption
+                        );
+                        
+                        if (success) {
+                            // Clear media
+                            removeMediaBtn.click();
+                            showNotification('Media sent!');
+                        }
+                    } catch (error) {
+                        showNotification('Failed to send media: ' + error.message);
+                    }
+                    
+                    // Stop typing indicator
+                    mySpaceWS.setTyping(false, roomId, isPrivate);
+                    return;
+                }
+                
+                // Regular text message
+                const message = messageInput.value.trim();
+                if (!message) return;
+                
+                if (mySpaceWS.sendMessage(message, roomId, isPrivate)) {
+                    messageInput.value = '';
+                    mySpaceWS.setTyping(false, roomId, isPrivate);
+                }
+            });
+            });
         
         // Helper functions
         function updateConnectionStatus(status) {

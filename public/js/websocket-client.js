@@ -26,7 +26,8 @@ class MySpaceWebSocket {
       onOnlineUsers: null,
       onError: null,
       onConnected: null,
-      onDisconnected: null
+      onDisconnected: null,
+      onMediaUploadAck: null
     };
   }
 
@@ -46,7 +47,7 @@ class MySpaceWebSocket {
       return false;
     }
 
-    this.socket = io('ws://localhost:3002', {
+    // Use configured URL or default to localhost\n    const wsUrl = window.WEBSOCKET_URL || 'ws://localhost:3002';\n\n    this.socket = io(wsUrl, {
       auth: { token },
       transports: ['websocket', 'polling'],
       timeout: 20000,
@@ -160,6 +161,14 @@ class MySpaceWebSocket {
         this.callbacks.onError(error);
       }
     });
+
+    // Media upload acknowledgment
+    this.socket.on('media_upload_ack', (data) => {
+      console.log('Media upload ack:', data);
+      if (this.callbacks.onMediaUploadAck) {
+        this.callbacks.onMediaUploadAck(data);
+      }
+    });
   }
 
   /**
@@ -240,6 +249,112 @@ class MySpaceWebSocket {
   }
 
   /**
+   * Upload file to server
+   * @param {File} file - The file to upload
+   * @returns {Promise<Object>} - Upload result with file data
+   */
+  async uploadFile(file) {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('Uploading file:', file.name, file.type, file.size);
+      
+      fetch('/MySpace/public/api/upload-media.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      })
+      .then(response => {
+        console.log('Upload response status:', response.status);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Upload response data:', data);
+        if (data.success) {
+          resolve(data);
+        } else {
+          reject(new Error(data.message || 'Upload failed'));
+        }
+      })
+      .catch(error => {
+        console.error('Upload error:', error);
+        reject(error);
+      });
+    });
+  }
+
+  /**
+   * Send media message (image or video)
+   * @param {File} file - The file to send
+   * @param {string|number} roomId 
+   * @param {boolean} isPrivate 
+   * @param {string} caption - Optional caption
+   */
+  async sendMediaMessage(file, roomId, isPrivate = false, caption = '') {
+    if (!this.socket || !this.socket.connected) {
+      console.error('WebSocket: Not connected');
+      return false;
+    }
+
+    try {
+      // First upload the file
+      const uploadResult = await this.uploadFile(file);
+      
+      // Determine if image or video
+      const fileType = file.type.startsWith('video/') ? 'video' : 'image';
+      
+      // Prepare media data
+      const mediaData = {
+        type: fileType,
+        url: uploadResult.file_url,
+        thumbnail: uploadResult.thumbnail_url || null,
+        size: uploadResult.file_size,
+        name: uploadResult.file_name
+      };
+
+      // Send media message via WebSocket
+      this.socket.emit('send_media_message', {
+        roomId,
+        mediaData,
+        caption: caption.trim(),
+        isPrivate
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Failed to send media:', error);
+      if (this.callbacks.onError) {
+        this.callbacks.onError(error);
+      }
+      return false;
+    }
+  }
+
+  /**
+   * Send media message with pre-uploaded URL
+   * @param {Object} mediaData - Media data from upload
+   * @param {string|number} roomId 
+   * @param {boolean} isPrivate 
+   * @param {string} caption - Optional caption
+   */
+  sendMediaMessageWithData(mediaData, roomId, isPrivate = false, caption = '') {
+    if (!this.socket || !this.socket.connected) {
+      console.error('WebSocket: Not connected');
+      return false;
+    }
+
+    this.socket.emit('send_media_message', {
+      roomId,
+      mediaData,
+      caption: caption.trim(),
+      isPrivate
+    });
+
+    return true;
+  }
+
+  /**
    * Leave current room
    */
   leaveRoom() {
@@ -304,6 +419,37 @@ class MySpaceWebSocket {
     const messageElement = document.createElement('div');
     messageElement.className = `chat-message ${message.senderId == this.userId ? 'own-message' : ''}`;
     
+    // Determine message type
+    const messageType = message.messageType || 'text';
+    
+    let messageContent = '';
+    
+    if (messageType === 'image') {
+      // Image message
+      messageContent = `
+        <div class="message-media">
+          <img src="${this.escapeHtml(message.mediaUrl)}" 
+               alt="Image" 
+               class="chat-image"
+               onclick="window.open('${this.escapeHtml(message.mediaUrl)}', '_blank')"
+          />
+        </div>
+      `;
+    } else if (messageType === 'video') {
+      // Video message
+      messageContent = `
+        <div class="message-media">
+          <video controls class="chat-video" preload="metadata">
+            <source src="${this.escapeHtml(message.mediaUrl)}" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+        </div>
+      `;
+    } else {
+      // Text message
+      messageContent = `<div class="message-text">${this.escapeHtml(message.content)}</div>`;
+    }
+    
     messageElement.innerHTML = `
       <div class="message-avatar">
         ${message.senderAvatar ? 
@@ -316,7 +462,8 @@ class MySpaceWebSocket {
           <span class="message-author">${message.senderName || 'Unknown'}</span>
           <span class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</span>
         </div>
-        <div class="message-text">${this.escapeHtml(message.content)}</div>
+        ${message.content && message.content.trim() ? `<div class="message-text">${this.escapeHtml(message.content)}</div>` : ''}
+        ${messageContent}
       </div>
     `;
 

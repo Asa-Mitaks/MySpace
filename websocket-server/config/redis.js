@@ -1,14 +1,18 @@
 const redis = require('redis');
 const config = require('./config');
 
-// Create Redis client
-const redisClient = redis.createClient({
-  host: config.REDIS_HOST,
-  port: config.REDIS_PORT,
-  password: config.REDIS_PASSWORD || undefined,
-  retry_delay_on_failover: 100,
-  enable_offline_queue: false
-});
+// Create Redis client - use REDIS_URL if available (Heroku), otherwise use individual settings
+const redisOptions = config.REDIS_URL 
+  ? { url: config.REDIS_URL }
+  : {
+      socket: {
+        host: config.REDIS_HOST,
+        port: config.REDIS_PORT
+      },
+      password: config.REDIS_PASSWORD || undefined
+    };
+
+const redisClient = redis.createClient(redisOptions);
 
 // Handle Redis connection events
 redisClient.on('connect', () => {

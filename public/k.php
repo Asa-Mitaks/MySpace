@@ -1,6 +1,9 @@
 <?php
 // This is the main entry point for the application
 
+// Start session
+session_start();
+
 // Include configuration file
 require_once '../config/config.php';
 
@@ -8,9 +11,6 @@ require_once '../config/config.php';
 require_once '../src/controllers/AuthController.php';
 require_once '../src/controllers/BlogController.php';
 require_once '../src/controllers/ChatController.php';
-
-// Start session
-session_start();
 
 // Check if user is logged in
 $isLoggedIn = isset($_SESSION['user_id']);
@@ -32,7 +32,7 @@ switch ($page) {
     case 'blog':
         // Load blog page
         if (!$isLoggedIn) {
-            header('Location: index.php');
+            header('Location: ../index.php');
             exit;
         }
         $blogController = new BlogController();
@@ -41,7 +41,7 @@ switch ($page) {
     case 'chat':
         // Load chat page
         if (!$isLoggedIn) {
-            header('Location: index.php');
+            header('Location: ../index.php');
             exit;
         }
         $chatController = new ChatController();
@@ -60,7 +60,7 @@ switch ($page) {
     case 'dashboard':
         // Load dashboard page
         if (!$isLoggedIn) {
-            header('Location: index.php');
+            header('Location: ../index.php');
             exit;
         }
         include 'dashboard.php';

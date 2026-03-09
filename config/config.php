@@ -29,6 +29,10 @@ if ($databaseUrl) {
     define('DB_PASS', getenv('DB_PASS') ?: '');
 }
 
+if (!defined('DB_PORT')) {
+    define('DB_PORT', getenv('DB_PORT') ?: 3306);
+}
+
 // Application settings
 define('APP_NAME', getenv('APP_NAME') ?: 'Chat Forum');
 define('APP_URL', getenv('APP_URL') ?: 'http://localhost/chat-forum/public');

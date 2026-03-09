@@ -4,6 +4,7 @@ const config = require('./config');
 // Database connection pool
 const pool = mysql.createPool({
   host: config.DB_HOST,
+  port: config.DB_PORT || 3306,
   database: config.DB_NAME,
   user: config.DB_USER,
   password: config.DB_PASS,
@@ -57,13 +58,37 @@ const UserQueries = {
 
 // Message-related queries
 const MessageQueries = {
-  // Save new message
-  create: async (senderId, receiverId, content, roomId = null) => {
+  // Save new text message
+  create: async (senderId, receiverId, content, messageType = 'text', mediaData = null, roomId = null) => {
+    let mediaUrl = null;
+    let mediaThumbnail = null;
+    let mediaSize = null;
+    let mediaName = null;
+    
+    if (mediaData) {
+      mediaUrl = mediaData.url || null;
+      mediaThumbnail = mediaData.thumbnail || null;
+      mediaSize = mediaData.size || null;
+      mediaName = mediaData.name || null;
+    }
+    
     const result = await query(
-      'INSERT INTO messages (sender_id, receiver_id, message, created_at) VALUES (?, ?, ?, NOW())',
-      [senderId, receiverId || null, content]
+      `INSERT INTO messages (sender_id, receiver_id, message, message_type, media_url, media_thumbnail, media_size, media_name, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [senderId, receiverId || null, content, messageType, mediaUrl, mediaThumbnail, mediaSize, mediaName]
     );
     return result.insertId;
+  },
+  
+  // Save media message (image or video)
+  createMediaMessage: async (senderId, receiverId, mediaData, caption = '') => {
+    return await MessageQueries.create(
+      senderId,
+      receiverId,
+      caption,
+      mediaData.type,
+      mediaData
+    );
   },
   
   // Get messages between users (private chat)

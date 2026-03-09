@@ -13,7 +13,7 @@ const app = express();
 
 // Enable CORS
 app.use(cors({
-  origin: [config.ALLOWED_ORIGINS],
+  origin: config.ALLOWED_ORIGINS,
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -63,9 +63,14 @@ io.on('connection', (socket) => {
     chatHandler.handleJoinRoom(data);
   });
   
-  // Send message
+  // Send text message
   socket.on('send_message', (data) => {
     chatHandler.handleSendMessage(data);
+  });
+  
+  // Send media message (image or video)
+  socket.on('send_media_message', (data) => {
+    chatHandler.handleSendMediaMessage(data);
   });
   
   // Typing indicator
@@ -136,12 +141,13 @@ app.post('/validate-token', express.json(), (req, res) => {
   }
 });
 
-// Start server
-server.listen(config.WS_PORT, () => {
-  console.log(`🚀 MySpace WebSocket Server running on port ${config.WS_PORT}`);
-  console.log(`🔗 WebSocket endpoint: ws://localhost:${config.WS_PORT}`);
-  console.log(`🌐 HTTP endpoint: http://localhost:${config.WS_PORT}`);
-  console.log(`📊 Health check: http://localhost:${config.WS_PORT}/health`);
+// Start server - use PORT on Heroku (single port), WS_PORT locally
+const listenPort = process.env.PORT || config.WS_PORT;
+server.listen(listenPort, () => {
+  console.log(`🚀 MySpace WebSocket Server running on port ${listenPort}`);
+  console.log(`🔗 WebSocket endpoint: ws://localhost:${listenPort}`);
+  console.log(`🌐 HTTP endpoint: http://localhost:${listenPort}`);
+  console.log(`📊 Health check: http://localhost:${listenPort}/health`);
 });
 
 // Graceful shutdown

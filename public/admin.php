@@ -4,7 +4,7 @@ require_once '../config/config.php';
 
 // Check if user is logged in and is admin
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
 
