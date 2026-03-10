@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /* Landing Navbar */
         .landing-navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             padding: 15px 50px;
             display: flex;
             justify-content: space-between;
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .landing-navbar .btn-login {
             background: white;
-            color: #667eea;
+            color: #1a73e8;
             padding: 10px 25px;
             border-radius: 25px;
             font-weight: 600;
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-hero-primary {
             background: white;
-            color: #667eea;
+            color: #1a73e8;
         }
 
         .btn-hero-primary:hover {
@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-hero-secondary:hover {
             background: white;
-            color: #667eea;
+            color: #1a73e8;
         }
 
         /* Login Box */
@@ -272,14 +272,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
         }
 
         .login-box button {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -291,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .login-box button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
         }
 
         .register-link {
@@ -302,7 +302,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .register-link a {
-            color: #667eea;
+            color: #1a73e8;
             text-decoration: none;
             font-weight: 600;
         }
@@ -348,19 +348,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
             padding: 40px 30px;
             border-radius: 15px;
-            background: #f8f9ff;
+            background: #f0f6ff;
             transition: all 0.3s;
         }
 
         .feature-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 20px 40px rgba(26, 115, 232, 0.15);
         }
 
         .feature-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -406,7 +406,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .step-number {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -431,7 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* CTA Section */
         .cta {
             padding: 100px 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             text-align: center;
             color: white;
         }
@@ -773,10 +773,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.landing-navbar');
             if (window.scrollY > 50) {
-                navbar.style.background = 'rgba(102, 126, 234, 0.95)';
+                navbar.style.background = 'rgba(26, 115, 232, 0.95)';
                 navbar.style.backdropFilter = 'blur(10px)';
             } else {
-                navbar.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                navbar.style.background = 'linear-gradient(135deg, #1a73e8 0%, #1557b0 100%)';
                 navbar.style.backdropFilter = 'none';
             }
         });

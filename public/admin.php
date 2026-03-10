@@ -95,7 +95,7 @@ function formatDate($date) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Chat Forum</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
     <style>
         .admin-container {
             max-width: 1400px;
@@ -105,7 +105,7 @@ function formatDate($date) {
         }
         
         .admin-header {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
             color: white;
             padding: 30px;
             border-radius: 12px;
@@ -167,7 +167,7 @@ function formatDate($date) {
         }
 
         body.dark-mode .toggle-switch {
-            background: #667eea;
+            background: #1a73e8;
         }
 
         body.dark-mode .toggle-slider {
@@ -219,7 +219,7 @@ function formatDate($date) {
         }
 
         body.dark-mode .blog-footer {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
         }
         
         .stats-grid {
@@ -359,7 +359,7 @@ function formatDate($date) {
         }
         
         .admin-navbar {
-            background: #1a1a2e;
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
         }
         
         .admin-navbar .navbar-brand h1 {

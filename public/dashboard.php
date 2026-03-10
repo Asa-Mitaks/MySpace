@@ -17,7 +17,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Chat Forum</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
 </head>
 <body>
     <div class="dashboard-container">
@@ -188,7 +188,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         .landing-box {
             background: white;
             border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 20px 60px rgba(26, 115, 232, 0.15);
             width: 100%;
             max-width: 1000px;
             overflow: hidden;
@@ -197,10 +197,10 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
 
         /* About Text */
         .about-text {
-            background: #f8f9ff;
+            background: #f0f6ff;
             padding: 30px;
             border-radius: 16px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #1a73e8;
         }
 
         .about-text p {
@@ -215,7 +215,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         }
 
         .about-text strong {
-            color: #667eea;
+            color: #1a73e8;
         }
 
         @keyframes slideUp {
@@ -231,7 +231,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
 
         /* Header */
         .landing-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             padding: 50px 40px;
             position: relative;
             overflow: hidden;
@@ -312,7 +312,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
             align-items: center;
             gap: 20px;
             padding: 18px 20px;
-            background: #f8f9ff;
+            background: #f0f6ff;
             border-radius: 16px;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -321,15 +321,15 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
 
         .feature-item:hover {
             background: white;
-            border-color: #667eea;
+            border-color: #1a73e8;
             transform: translateX(8px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.15);
         }
 
         .feature-icon-box {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             border-radius: 14px;
             display: flex;
             align-items: center;
@@ -354,7 +354,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         }
 
         .feature-arrow {
-            color: #667eea;
+            color: #1a73e8;
             font-size: 1.4rem;
             font-weight: 600;
             opacity: 0;
@@ -385,7 +385,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         .step-num {
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -404,7 +404,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         .step-connector {
             flex: 1;
             height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #1a73e8, #1557b0);
             border-radius: 2px;
             min-width: 30px;
             max-width: 60px;
@@ -412,7 +412,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
 
         /* Quick Actions */
         .actions-section {
-            background: #fafbff;
+            background: #f0f6ff;
             text-align: center;
         }
 
@@ -442,29 +442,29 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         }
 
         .quick-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
         }
 
         .quick-btn.primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
         }
 
         .quick-btn.secondary {
             background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            color: #1a73e8;
+            border: 2px solid #1a73e8;
         }
 
         .quick-btn.secondary:hover {
-            background: #667eea;
+            background: #1a73e8;
             color: white;
             transform: translateY(-3px);
         }
 
         .quick-btn.tertiary {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
             color: white;
         }
 
@@ -474,19 +474,19 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         }
 
         .quick-btn.admin {
-            background: #1a1a2e;
+            background: #1a73e8;
             color: white;
         }
 
         .quick-btn.admin:hover {
-            background: #16213e;
+            background: #1557b0;
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(26, 26, 46, 0.3);
+            box-shadow: 0 10px 30px rgba(26, 115, 232, 0.3);
         }
 
         /* Box Footer */
         .box-footer {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             padding: 25px 40px;
             text-align: center;
         }

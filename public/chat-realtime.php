@@ -105,7 +105,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             display: flex;
             align-items: center;
             padding: 10px;
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(26, 115, 232, 0.1);
             border-radius: 10px;
             margin: 10px 0;
             animation: fadeIn 0.3s ease;
@@ -115,7 +115,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #667eea;
+            background: #1a73e8;
             color: white;
             display: flex;
             align-items: center;
@@ -131,7 +131,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         }
 
         .typing-content span {
-            color: #667eea;
+            color: #1a73e8;
             font-size: 14px;
             margin-bottom: 5px;
         }
@@ -145,7 +145,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #667eea;
+            background: #1a73e8;
             animation: typingDot 1.4s infinite ease-in-out;
         }
 
@@ -225,7 +225,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         }
 
         .friend-item.active {
-            background: #667eea;
+            background: #1a73e8;
             color: white;
         }
 
@@ -273,7 +273,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         }
 
         .media-btn:hover {
-            background: #667eea;
+            background: #1a73e8;
             color: white;
             transform: scale(1.1);
         }
@@ -336,7 +336,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         }
 
         .media-caption-area input:focus {
-            border-color: #667eea;
+            border-color: #1a73e8;
         }
 
         /* Chat Media Styles */
@@ -384,7 +384,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
 
         .upload-progress-fill {
             height: 100%;
-            background: #667eea;
+            background: #1a73e8;
             transition: width 0.3s ease;
         }
 
@@ -399,7 +399,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         }
 
         body.dark-mode .media-btn:hover {
-            background: #667eea;
+            background: #1a73e8;
             color: white;
         }
 
@@ -892,7 +892,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                 position: fixed;
                 top: 80px;
                 right: 20px;
-                background: #667eea;
+                background: #1a73e8;
                 color: white;
                 padding: 12px 20px;
                 border-radius: 8px;

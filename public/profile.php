@@ -137,7 +137,7 @@ $profileImage = $user['profile_image'] ?? null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - Myspace</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
     <style>
         body {
             background: #f0f2f5;
@@ -179,7 +179,7 @@ $profileImage = $user['profile_image'] ?? null;
         }
 
         .profile-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             padding: 40px;
             text-align: center;
             color: white;
@@ -197,7 +197,7 @@ $profileImage = $user['profile_image'] ?? null;
             width: 120px;
             height: 120px;
             background: white;
-            color: #667eea;
+            color: #1a73e8;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -268,7 +268,7 @@ $profileImage = $user['profile_image'] ?? null;
         .stat-value {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #667eea;
+            color: #1a73e8;
         }
 
         .stat-label {
@@ -355,7 +355,7 @@ $profileImage = $user['profile_image'] ?? null;
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -393,7 +393,7 @@ $profileImage = $user['profile_image'] ?? null;
         }
 
         .stat-item.friends .stat-value {
-            color: #667eea;
+            color: #1a73e8;
         }
 
         /* Dark mode */
@@ -572,7 +572,7 @@ $profileImage = $user['profile_image'] ?? null;
         }
 
         .btn-confirm-remove {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
             color: white;
             border: none;
             padding: 12px 25px;

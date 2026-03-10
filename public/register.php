@@ -126,13 +126,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .form-group input:focus {
             outline: none;
-            border-color: #333;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: #333;
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             border-radius: 4px;
@@ -140,10 +141,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             cursor: pointer;
             margin-top: 5px;
+            transition: all 0.3s;
         }
 
         button:hover {
-            background: #555;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.4);
+            transform: translateY(-1px);
         }
 
         .login-link {
@@ -154,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .login-link a {
-            color: #333;
+            color: #1a73e8;
             text-decoration: underline;
         }
     </style>

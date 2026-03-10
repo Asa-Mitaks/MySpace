@@ -169,7 +169,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
 
         .modal-content textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1a73e8;
         }
 
         body.dark-mode .modal-content textarea {
@@ -179,7 +179,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         }
 
         body.dark-mode .modal-content textarea:focus {
-            border-color: #667eea;
+            border-color: #1a73e8;
         }
 
         .modal-buttons {
@@ -214,7 +214,7 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
         }
 
         .btn-confirm-edit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -227,7 +227,154 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
 
         .btn-confirm-edit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.4);
+        }
+
+        /* Attach / Upload Button */
+        .btn-attach {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+            color: #1a73e8;
+            flex-shrink: 0;
+        }
+        .btn-attach:hover {
+            background: rgba(26, 115, 232, 0.12);
+        }
+        .btn-attach:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        body.dark-mode .btn-attach {
+            color: #a0aeff;
+        }
+
+        /* Media Upload Preview */
+        .media-upload-preview {
+            padding: 10px 18px;
+            border-top: 1px solid #e0e0e0;
+            background: #f9f9fb;
+        }
+        body.dark-mode .media-upload-preview {
+            background: #2d2d44;
+            border-top-color: #40444b;
+        }
+        .media-preview-inner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        .media-preview-inner img,
+        .media-preview-inner video {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #1a73e8;
+        }
+        .media-preview-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+        .media-preview-info span:first-child {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        body.dark-mode .media-preview-info span:first-child {
+            color: #eee;
+        }
+        .media-preview-info span:last-child {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .media-preview-remove {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .media-preview-remove:hover {
+            background: #c0392b;
+        }
+
+        /* Upload Progress */
+        .media-upload-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        body.dark-mode .progress-bar {
+            background: #40444b;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+            border-radius: 3px;
+            transition: width 0.2s;
+        }
+        #progressText {
+            font-size: 0.8rem;
+            color: #1a73e8;
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        /* Chat Media in Messages */
+        .message-media {
+            margin: 6px 0;
+            max-width: 320px;
+        }
+        .chat-media-img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            object-fit: contain;
+            transition: transform 0.2s;
+        }
+        .chat-media-img:hover {
+            transform: scale(1.02);
+        }
+        .chat-media-vid {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            display: block;
         }
     </style>
 </head>
@@ -291,7 +438,25 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                                         <span class="message-author"><?php echo htmlspecialchars($msg['username']); ?></span>
                                         <span class="message-time"><?php echo date('H:i', strtotime($msg['created_at'])); ?></span>
                                     </div>
-                                    <div class="message-text" id="msg-text-<?php echo $msg['id']; ?>"><?php echo htmlspecialchars($msg['content']); ?></div>
+                                    <?php if (!empty($msg['message_type']) && $msg['message_type'] === 'image' && !empty($msg['media_url'])): ?>
+                                        <div class="message-media">
+                                            <a href="<?php echo htmlspecialchars($msg['media_url']); ?>" target="_blank">
+                                                <img src="<?php echo htmlspecialchars($msg['media_url']); ?>" alt="Image" class="chat-media-img" loading="lazy">
+                                            </a>
+                                        </div>
+                                        <?php if (!empty($msg['content'])): ?>
+                                            <div class="message-text" id="msg-text-<?php echo $msg['id']; ?>"><?php echo htmlspecialchars($msg['content']); ?></div>
+                                        <?php endif; ?>
+                                    <?php elseif (!empty($msg['message_type']) && $msg['message_type'] === 'video' && !empty($msg['media_url'])): ?>
+                                        <div class="message-media">
+                                            <video src="<?php echo htmlspecialchars($msg['media_url']); ?>" controls class="chat-media-vid" preload="metadata"></video>
+                                        </div>
+                                        <?php if (!empty($msg['content'])): ?>
+                                            <div class="message-text" id="msg-text-<?php echo $msg['id']; ?>"><?php echo htmlspecialchars($msg['content']); ?></div>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <div class="message-text" id="msg-text-<?php echo $msg['id']; ?>"><?php echo htmlspecialchars($msg['content']); ?></div>
+                                    <?php endif; ?>
                                 </div>
                                 <?php if ($msg['sender_id'] == $userId): ?>
                                 <div class="message-menu">
@@ -299,9 +464,11 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                                         <span></span><span></span><span></span>
                                     </button>
                                     <div class="menu-dropdown" id="menu-<?php echo $msg['id']; ?>">
+                                        <?php if (empty($msg['message_type']) || $msg['message_type'] === 'text'): ?>
                                         <button type="button" onclick="editMessage(<?php echo $msg['id']; ?>, '<?php echo addslashes(htmlspecialchars($msg['content'], ENT_QUOTES)); ?>')">
                                             Edit
                                         </button>
+                                        <?php endif; ?>
                                         <form method="POST" action="chat.php<?php echo $chatPartnerId ? '?with=' . $chatPartnerId : ''; ?>" onsubmit="return confirm('Are you sure you want to delete this message?');">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="message_id" value="<?php echo $msg['id']; ?>">
@@ -318,12 +485,35 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                     <?php endif; ?>
                 </div>
                 
-                <form method="POST" action="chat.php<?php echo $chatPartnerId ? '?with=' . $chatPartnerId : ''; ?>" class="chat-form">
+                <!-- Media Preview Area -->
+                <div class="media-upload-preview" id="mediaPreview" style="display:none;">
+                    <div class="media-preview-inner">
+                        <img id="mediaPreviewImg" src="" alt="Preview" style="display:none;">
+                        <video id="mediaPreviewVid" src="" style="display:none;" muted></video>
+                        <div class="media-preview-info">
+                            <span id="mediaPreviewName"></span>
+                            <span id="mediaPreviewSize"></span>
+                        </div>
+                        <button type="button" class="media-preview-remove" id="mediaPreviewRemove" title="Remove">&times;</button>
+                    </div>
+                    <div class="media-upload-progress" id="mediaUploadProgress" style="display:none;">
+                        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                        <span id="progressText">Uploading...</span>
+                    </div>
+                </div>
+
+                <form method="POST" action="chat.php<?php echo $chatPartnerId ? '?with=' . $chatPartnerId : ''; ?>" class="chat-form" id="chatForm">
                     <?php if ($chatPartnerId): ?>
                         <input type="hidden" name="receiver_id" value="<?php echo $chatPartnerId; ?>">
                     <?php endif; ?>
                     <div class="chat-input-group">
-                        <input type="text" name="message" placeholder="Write your message..." required autocomplete="off">
+                        <button type="button" class="btn-attach" id="btnAttach" title="Send image or video">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                            </svg>
+                        </button>
+                        <input type="file" id="mediaFileInput" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime" style="display:none;">
+                        <input type="text" name="message" id="messageInput" placeholder="Write your message..." autocomplete="off">
                         <button type="submit" class="btn-send">
                             <span>Send</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -469,6 +659,140 @@ $messages = $chatController->getMessages($userId, $chatPartnerId) ?? [];
                 closeEditModal();
             }
         });
+
+        // ========== Media Upload Handling ==========
+        const btnAttach = document.getElementById('btnAttach');
+        const mediaFileInput = document.getElementById('mediaFileInput');
+        const mediaPreview = document.getElementById('mediaPreview');
+        const mediaPreviewImg = document.getElementById('mediaPreviewImg');
+        const mediaPreviewVid = document.getElementById('mediaPreviewVid');
+        const mediaPreviewName = document.getElementById('mediaPreviewName');
+        const mediaPreviewSize = document.getElementById('mediaPreviewSize');
+        const mediaPreviewRemove = document.getElementById('mediaPreviewRemove');
+        const mediaUploadProgress = document.getElementById('mediaUploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const chatForm = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+
+        let selectedFile = null;
+
+        btnAttach.addEventListener('click', function() {
+            mediaFileInput.click();
+        });
+
+        mediaFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            selectedFile = file;
+
+            // Show preview
+            mediaPreviewImg.style.display = 'none';
+            mediaPreviewVid.style.display = 'none';
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mediaPreviewImg.src = e.target.result;
+                    mediaPreviewImg.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('video/')) {
+                mediaPreviewVid.src = URL.createObjectURL(file);
+                mediaPreviewVid.style.display = 'block';
+            }
+
+            mediaPreviewName.textContent = file.name;
+            mediaPreviewSize.textContent = formatFileSize(file.size);
+            mediaPreview.style.display = 'block';
+
+            // Remove required from message input when file is selected
+            messageInput.removeAttribute('required');
+        });
+
+        mediaPreviewRemove.addEventListener('click', function() {
+            selectedFile = null;
+            mediaFileInput.value = '';
+            mediaPreview.style.display = 'none';
+            mediaPreviewImg.style.display = 'none';
+            mediaPreviewVid.style.display = 'none';
+            mediaPreviewImg.src = '';
+            mediaPreviewVid.src = '';
+        });
+
+        chatForm.addEventListener('submit', function(e) {
+            if (!selectedFile) {
+                // Normal text message - require message
+                if (!messageInput.value.trim()) {
+                    e.preventDefault();
+                    return;
+                }
+                return; // Let the form submit normally
+            }
+
+            e.preventDefault();
+            uploadMedia();
+        });
+
+        function uploadMedia() {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('receiver_id', '<?php echo $chatPartnerId ? $chatPartnerId : ''; ?>');
+            formData.append('caption', messageInput.value.trim());
+
+            mediaUploadProgress.style.display = 'flex';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Uploading...';
+            btnAttach.disabled = true;
+            chatForm.querySelector('.btn-send').disabled = true;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'api/upload-media.php', true);
+
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const pct = Math.round((e.loaded / e.total) * 100);
+                    progressFill.style.width = pct + '%';
+                    progressText.textContent = pct + '%';
+                }
+            });
+
+            xhr.onload = function() {
+                try {
+                    const resp = JSON.parse(xhr.responseText);
+                    if (resp.success) {
+                        // Reload page to show the new message
+                        window.location.href = 'chat.php<?php echo $chatPartnerId ? "?with=" . $chatPartnerId : ""; ?>';
+                    } else {
+                        alert('Upload failed: ' + resp.message);
+                        resetUploadState();
+                    }
+                } catch (err) {
+                    alert('Upload failed: unexpected response');
+                    resetUploadState();
+                }
+            };
+
+            xhr.onerror = function() {
+                alert('Upload failed: network error');
+                resetUploadState();
+            };
+
+            xhr.send(formData);
+        }
+
+        function resetUploadState() {
+            mediaUploadProgress.style.display = 'none';
+            btnAttach.disabled = false;
+            chatForm.querySelector('.btn-send').disabled = false;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
     </script>
 </body>
 </html>

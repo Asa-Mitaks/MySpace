@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Myspace</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
     <style>
         body {
             background: #f0f2f5;
@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         body.dark-mode .toggle-switch {
-            background: #667eea;
+            background: #1a73e8;
         }
 
         body.dark-mode .toggle-slider {
@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .danger-header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%) !important;
+            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%) !important;
         }
 
         .danger-text {
@@ -236,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-delete-account {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -352,7 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-confirm-delete {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -377,7 +377,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .settings-card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             padding: 20px 25px;
         }
@@ -415,11 +415,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1a73e8;
         }
 
         .btn-save {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             padding: 14px 30px;
@@ -432,7 +432,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 20px rgba(26, 115, 232, 0.4);
         }
 
         .message {

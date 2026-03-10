@@ -99,6 +99,10 @@ if ($isImage && extension_loaded('gd')) {
     }
 }
 
+// Get receiver_id and caption from request
+$receiverId = isset($_POST['receiver_id']) && $_POST['receiver_id'] !== '' ? (int)$_POST['receiver_id'] : null;
+$caption = isset($_POST['caption']) ? trim($_POST['caption']) : '';
+
 // Save to database
 try {
     $pdo = new PDO(
@@ -110,6 +114,7 @@ try {
     
     $mediaUrl = 'uploads/chat/' . $fullFileName;
     $mediaThumbnail = $thumbnailPath ? 'uploads/chat/thumbnails/' . $thumbnailPath : null;
+    $mediaType = $isVideo ? 'video' : 'image';
     
     // Insert into chat_media table
     $stmt = $pdo->prepare("
@@ -127,10 +132,26 @@ try {
     
     $mediaId = $pdo->lastInsertId();
     
+    // Also create a message in the messages table
+    $stmt = $pdo->prepare("
+        INSERT INTO messages (sender_id, receiver_id, message, message_type, media_url, media_thumbnail, media_size, media_name, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    ");
+    $stmt->execute([
+        $userId,
+        $receiverId,
+        $caption,
+        $mediaType,
+        $mediaUrl,
+        $mediaThumbnail,
+        $fileSize,
+        $fileName
+    ]);
+    
     respond(true, 'File uploaded successfully', [
         'media_id' => $mediaId,
         'file_name' => $fileName,
-        'file_type' => $isVideo ? 'video' : 'image',
+        'file_type' => $mediaType,
         'file_url' => $mediaUrl,
         'thumbnail_url' => $mediaThumbnail,
         'file_size' => $fileSize

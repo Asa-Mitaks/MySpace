@@ -247,7 +247,7 @@ if ($isLoggedIn) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog - Myspace</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
     <style>
         body {
             background: #f0f2f5;
@@ -509,7 +509,7 @@ if ($isLoggedIn) {
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -546,7 +546,7 @@ if ($isLoggedIn) {
         }
 
         .btn-add-friend {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             padding: 8px 14px;
@@ -559,7 +559,7 @@ if ($isLoggedIn) {
 
         .btn-add-friend:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
         }
 
         .no-suggestions {
@@ -614,13 +614,13 @@ if ($isLoggedIn) {
             right: 30px;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             border: none;
             border-radius: 50%;
             color: white;
             font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 4px 20px rgba(26, 115, 232, 0.5);
             transition: all 0.3s;
             z-index: 99;
             display: flex;
@@ -630,7 +630,7 @@ if ($isLoggedIn) {
 
         .create-post-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 30px rgba(26, 115, 232, 0.6);
         }
 
         /* Modal Overlay */
@@ -730,7 +730,7 @@ if ($isLoggedIn) {
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1a73e8;
         }
 
         .form-group textarea {
@@ -752,8 +752,8 @@ if ($isLoggedIn) {
 
         .drop-zone:hover,
         .drop-zone.drag-over {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
+            border-color: #1a73e8;
+            background: rgba(26, 115, 232, 0.05);
         }
 
         .drop-zone-content {
@@ -772,7 +772,7 @@ if ($isLoggedIn) {
         }
 
         .browse-link {
-            color: #667eea;
+            color: #1a73e8;
             font-weight: 600;
         }
 
@@ -842,13 +842,13 @@ if ($isLoggedIn) {
         }
 
         .btn-publish {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
         }
 
         .btn-publish:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.4);
         }
 
         /* Posts Feed */
@@ -885,7 +885,7 @@ if ($isLoggedIn) {
         .author-avatar {
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -1022,7 +1022,7 @@ if ($isLoggedIn) {
         .comments-toggle {
             background: none;
             border: none;
-            color: #667eea;
+            color: #1a73e8;
             font-weight: 600;
             cursor: pointer;
             padding: 8px 0;
@@ -1135,12 +1135,12 @@ if ($isLoggedIn) {
 
         .comment-form textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1a73e8;
         }
 
         .comment-form button {
             padding: 12px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             border-radius: 20px;
@@ -1177,7 +1177,7 @@ if ($isLoggedIn) {
 
         /* Login Prompt */
         .login-prompt {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             padding: 20px;
             border-radius: 16px;
