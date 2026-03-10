@@ -17,6 +17,11 @@ try {
     $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
+    // Add bio column if not exists
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN bio VARCHAR(500) DEFAULT NULL");
+    } catch (PDOException $e) {}
+    
     // Get user info
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
     $stmt->execute([$userId]);
@@ -37,10 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($_POST['action'] === 'update_profile') {
             $newName = trim($_POST['name']);
             $newEmail = trim($_POST['email']);
+            $newBio = trim($_POST['bio'] ?? '');
+            if (mb_strlen($newBio) > 500) {
+                $newBio = mb_substr($newBio, 0, 500);
+            }
             
             if (!empty($newName) && !empty($newEmail)) {
-                $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
-                $stmt->execute([$newName, $newEmail, $userId]);
+                $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, bio = ? WHERE id = ?");
+                $stmt->execute([$newName, $newEmail, $newBio, $userId]);
                 $_SESSION['username'] = $newName;
                 $username = $newName;
                 $message = 'Profile updated successfully!';
@@ -222,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .danger-header {
-            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%) !important;
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%) !important;
         }
 
         .danger-text {
@@ -236,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-delete-account {
-            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -352,7 +361,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-confirm-delete {
-            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -413,7 +422,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: border-color 0.3s;
         }
 
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #1a73e8;
         }
@@ -464,14 +474,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         body.dark-mode .settings-card-header {
-            background: linear-gradient(135deg, #5865f2 0%, #7289da 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
         }
 
         body.dark-mode .form-group label {
             color: #eee;
         }
 
-        body.dark-mode .form-group input {
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group textarea {
             background: #40444b;
             border-color: #202225;
             color: #eee;
@@ -542,6 +553,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" name="bio" rows="3" maxlength="500" placeholder="Tell us about yourself..." style="width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; font-family: inherit; resize: vertical; transition: border-color 0.3s;"><?php echo htmlspecialchars($user['bio'] ?? ''); ?></textarea>
+                        <small style="color: #999; font-size: 0.8rem;">Max 500 characters</small>
                     </div>
                     <button type="submit" class="btn-save">Save Changes</button>
                 </form>
@@ -642,5 +658,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
     </script>
+    <script src="js/app.js"></script>
 </body>
 </html>

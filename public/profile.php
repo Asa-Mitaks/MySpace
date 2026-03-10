@@ -22,6 +22,11 @@ try {
         $pdo->exec("ALTER TABLE users ADD COLUMN profile_image VARCHAR(500) DEFAULT NULL");
     } catch (PDOException $e) {}
     
+    // Add bio column if not exists
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN bio VARCHAR(500) DEFAULT NULL");
+    } catch (PDOException $e) {}
+    
     // Handle profile image upload
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
         if ($_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
@@ -251,6 +256,20 @@ $profileImage = $user['profile_image'] ?? null;
         .profile-email {
             opacity: 0.9;
             font-size: 1.1rem;
+        }
+
+        .profile-bio {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+            font-style: italic;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
         }
 
         .profile-stats {
@@ -572,7 +591,7 @@ $profileImage = $user['profile_image'] ?? null;
         }
 
         .btn-confirm-remove {
-            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -633,6 +652,9 @@ $profileImage = $user['profile_image'] ?? null;
                 </form>
                 <h1 class="profile-name"><?php echo htmlspecialchars($user['name']); ?></h1>
                 <p class="profile-email"><?php echo htmlspecialchars($user['email']); ?></p>
+                <?php if (!empty($user['bio'])): ?>
+                <p class="profile-bio"><?php echo htmlspecialchars($user['bio']); ?></p>
+                <?php endif; ?>
             </div>
 
             <div class="profile-stats">
@@ -782,5 +804,6 @@ $profileImage = $user['profile_image'] ?? null;
             }
         });
     </script>
+    <script src="js/app.js"></script>
 </body>
 </html>

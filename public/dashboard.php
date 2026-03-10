@@ -148,7 +148,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
         }
 
         body.dark-mode .landing-header {
-            background: linear-gradient(135deg, #5865f2 0%, #7289da 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
         }
 
         body.dark-mode .section-heading,
@@ -166,12 +166,12 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'User';
 
         body.dark-mode .quick-btn.secondary {
             background: #40444b;
-            border-color: #5865f2;
+            border-color: #1a73e8;
             color: #eee;
         }
 
         body.dark-mode .quick-btn.secondary:hover {
-            background: #5865f2;
+            background: #1a73e8;
             color: white;
         }
 

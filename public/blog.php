@@ -370,7 +370,7 @@ if ($isLoggedIn) {
         }
 
         body.dark-mode .login-prompt a {
-            color: #5865f2;
+            color: #1a73e8;
         }
 
         body.dark-mode .post-menu-btn {
@@ -1774,5 +1774,6 @@ if ($isLoggedIn) {
             }
         });
     </script>
+    <script src="js/app.js"></script>
 </body>
 </html>
